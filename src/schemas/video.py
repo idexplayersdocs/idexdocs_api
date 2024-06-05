@@ -7,4 +7,4 @@ class VideoCreateSchema(BaseModel):
 
 class VideoUpdateSchema(BaseModel):
     video_id: int
-    descricao: str
+    descricao: str | None = None
