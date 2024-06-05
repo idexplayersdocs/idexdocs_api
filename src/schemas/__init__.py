@@ -1,0 +1,1 @@
+from .relacionamento import RelacionamentoCreateSchema

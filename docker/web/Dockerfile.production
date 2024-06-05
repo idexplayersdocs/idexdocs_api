@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/azure-functions/python:4-python3.11
+
+ENV PYTHONUNBUFFERED 1
+
+RUN apt update && apt install unixodbc -y
+RUN mkdir /opt/code
+RUN mkdir /opt/requirements
+WORKDIR /opt/code
+
+ADD requirements /opt/requirements
+RUN pip install -r /opt/requirements/prod.txt
+
+COPY . .
+
+CMD ["uvicorn", "asgi:app", "--host", "0.0.0.0", "--port", "8000"]
+

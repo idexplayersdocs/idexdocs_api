@@ -1,0 +1,8 @@
+-r test.txt
+pre-commit
+taskipy
+blue
+ruff
+httpx
+isort
+mypy

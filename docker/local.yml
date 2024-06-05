@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ${PWD}
+      dockerfile: docker/web/Dockerfile.local
+    # command: gunicorn -b :8000 --reload -k uvicorn.workers.UvicornWorker --timeout 500 asgi:app
+    volumes:
+      - ./src:/opt/code
+      - ./requirements:/opt/requirements
+    ports:
+      - "8000:80"
+    depends_on:
+      - sqlserver
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    user: root
+    container_name: sqlserver_idex
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_USER: ${MSSQL_USER}
+    ports:
+      - "${MSSQL_PORT}:1433"
+    volumes:
+      - sqlserver_idex_data:/var/opt/mssql/data/:rw
+
+volumes:
+  sqlserver_idex_data:

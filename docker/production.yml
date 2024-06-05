@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  api_rec:
+    build:
+      context: ${PWD}
+      dockerfile: docker/web/Dockerfile.production
+    environment:
+      APPLICATION_DB: ${APPLICATION_DB}
+      MSSQL_USER: ${MSSQL_USER}
+      MSSQL_HOSTNAME: ${MSSQL_HOSTNAME}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_PORT: ${MSSQL_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PORT: ${REDIS_PORT}
+    command: gunicorn -b :8001 -k uvicorn.workers.UvicornWorker --timeout 500 asgi:app
+    volumes:
+      - ${PWD}:/opt/code

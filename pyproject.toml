@@ -1,0 +1,33 @@
+[tool.ruff]
+line-length = 79
+exclude = ['.venv', 'migrations']
+
+[tool.isort]
+profile = "black"
+line_length = 79
+extend_skip = ['migrations']
+
+[tool.pytest.ini_options]
+pythonpath = "."
+minversion = 2.0
+norecursedirs = ['.git', '.tox',  'requirements*']
+python_files = ['test*.py']
+markers = [
+    'integration: integration tests'
+]
+
+[tool.blue]
+extend-exclude = ['(migrations/)', '(src/use_cases/pdf_create.py)']
+
+[tool.taskipy.tasks]
+lint = 'ruff check . && blue --check . --diff'
+format = 'blue . && isort .'
+type = 'mypy . --explicit-package-bases'
+run = 'uvicorn asgi:app --reload'
+pre_test = 'task lint'
+test = 'pytest -s -x --cov=src -vv'
+post_test = 'coverage html'
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.0.1"

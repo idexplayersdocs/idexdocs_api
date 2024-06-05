@@ -1,0 +1,25 @@
+# Use the official Python image
+FROM --platform=amd64 ghcr.io/br3ndonland/inboard:fastapi-0.51-python3.11
+
+# Set environment variable to ensure Python output is not buffered
+ENV PYTHONUNBUFFERED 1
+
+USER root
+
+# Install dependencies
+RUN apt-get update \
+  && apt-get install -y gnupg curl && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add --no-tty - \
+  && curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+  && apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc
+
+# create directories
+RUN mkdir /opt/code && mkdir /opt/requirements
+
+# Set working directory
+WORKDIR /opt/code
+
+COPY requirements /opt/requirements
+RUN pip install --upgrade pip && pip install -r /opt/requirements/dev.txt
+
+# Copy the rest of the application code
+COPY . .
