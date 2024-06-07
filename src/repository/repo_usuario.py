@@ -5,7 +5,13 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlmodel import func, select
 
 from .base_repo import create_session
-from .model_objects import Permissao, Usuario, UsuarioPermissao, UsuarioTipo
+from .model_objects import (
+    Permissao,
+    Usuario,
+    UsuarioPermissao,
+    UsuarioRole,
+    UsuarioTipo,
+)
 
 
 class UsuarioRepo:
@@ -50,6 +56,11 @@ class UsuarioRepo:
             session.add(new_usuario)
             session.commit()
             session.refresh(new_usuario)
+
+            new_usuario_tipo = UsuarioRole(
+                usuario_id=new_usuario.id, role_id=new_usuario.usuario_tipo_id
+            )
+            session.add(new_usuario_tipo)
 
             def get_permission_by_name(nome: str) -> Permissao | None:
                 return session.exec(
