@@ -11,7 +11,7 @@ class AtletaCreateUseCase:
         atleta_repository: AtletaRepo,
         clube_repository: ClubeRepo,
         contrato_repository: ContratoRepo,
-        posicao_repository: PosicaoRepo
+        posicao_repository: PosicaoRepo,
     ):
         self.atleta_repository = atleta_repository
         self.clube_repository = clube_repository
@@ -20,7 +20,7 @@ class AtletaCreateUseCase:
 
     def execute(self, http_request: HttpRequest):
         atleta_data: dict = http_request.json
-        
+
         new_atleta: dict = self._create_atleta(atleta_data)
         atleta_data.update(new_atleta)
 
@@ -34,7 +34,7 @@ class AtletaCreateUseCase:
 
     def _create_atleta(self, atleta_data: dict) -> dict:
         return self.atleta_repository.create_atleta(atleta_data)
-    
+
     def _create_clube(self, atleta_data: dict):
         new_clube = atleta_data.get('clube')
 
@@ -46,17 +46,15 @@ class AtletaCreateUseCase:
 
     def _create_contrato(self, atleta_data: dict):
         new_contrato_clube = atleta_data.get('contrato_clube')
+        new_contrato_empresa = atleta_data.get('contrato_empresa')
 
         if new_contrato_clube:
             new_contrato_clube['atleta_id'] = atleta_data.get('id')
+            self.contrato_repository.create_contrato(new_contrato_clube)
 
-            new_contrato_empresa = atleta_data.get('contrato_empresa')
+        if new_contrato_empresa:
             new_contrato_empresa['atleta_id'] = atleta_data.get('id')
-            
-            clube = self.contrato_repository.create_contrato(new_contrato_clube)
-            empresa = self.contrato_repository.create_contrato(new_contrato_empresa)
-            return clube and empresa
-        return None
+            self.contrato_repository.create_contrato(new_contrato_empresa)
 
     def _create_posicao(self, atleta_data: dict):
         new_posicao = {}
@@ -66,6 +64,3 @@ class AtletaCreateUseCase:
         new_posicao['terceira'] = atleta_data.get('posicao_terciaria')
 
         return self.posicao_repository.create_posicao(new_posicao)
-
-
-
