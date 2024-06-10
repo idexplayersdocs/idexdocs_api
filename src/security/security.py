@@ -18,7 +18,7 @@ from src.repository.model_objects import (
 )
 from src.repository.repo_usuario import UsuarioRepo
 
-SECRET_KEY = os.getenv('TOKEN_KEY')
+SECRET_KEY = os.environ['TOKEN_KEY']
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')

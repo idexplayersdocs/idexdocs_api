@@ -12,7 +12,7 @@ def init_sentry():
     """Initialize Sentry only if in production."""
     import sentry_sdk
 
-    sentry_dsn = os.getenv('SENTRY_DSN')
+    sentry_dsn = os.environ['SENTRY_DSN']
     sentry_sdk.init(
         dsn=sentry_dsn,
         # Set traces_sample_rate to 1.0 to capture 100%
