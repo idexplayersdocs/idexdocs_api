@@ -36,9 +36,9 @@ class Contrato(BaseModel):
 class AtletaCreateSchema(BaseModel):
     nome: str
     data_nascimento: str
-    clube: Clube
-    contrato_clube: Contrato
-    contrato_empresa: Contrato
+    clube: Clube | None
+    contrato_clube: Contrato | None
+    contrato_empresa: Contrato | None
     posicao_primaria: str
     posicao_secundaria: str | None
     posicao_terciaria: str | None

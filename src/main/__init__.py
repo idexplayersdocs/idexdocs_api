@@ -207,7 +207,7 @@ router.add_api_route(
                     'schema': AtletaCreateSchema.model_json_schema(),
                     'examples': {
                         'example1': {
-                            'summary': 'Exemplo de payload para criação de atleta',
+                            'summary': 'Exemplo de payload para criação de atleta completo',
                             'value': {
                                 'nome': 'Igor',
                                 'data_nascimento': '1985-03-11',
@@ -227,6 +227,19 @@ router.add_api_route(
                                     'data_fim': '2025-05-01',
                                     'observacao': 'null',
                                 },
+                                'posicao_primaria': 'atacante',
+                                'posicao_secundaria': 'null',
+                                'posicao_terciaria': 'null',
+                            },
+                        },
+                        'example2': {
+                            'summary': 'Exemplo de payload para criação de atleta parcial',
+                            'value': {
+                                'nome': 'Igor',
+                                'data_nascimento': '1985-03-11',
+                                'clube': 'null',
+                                'contrato_clube': 'null',
+                                'contrato_empresa': 'null',
                                 'posicao_primaria': 'atacante',
                                 'posicao_secundaria': 'null',
                                 'posicao_terciaria': 'null',

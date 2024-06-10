@@ -8,13 +8,13 @@ from .types import (
     BadRequestError,
     ClubeAtivoExistente,
     ContratoExistente,
+    CredentialsException,
     ExpiredTokenError,
     NotFoundError,
     SenhaInvalida,
     TokenInvalidError,
     UsuarioExistente,
     UsuarioNaoEncontrado,
-    CredentialsException,
 )
 
 logger = logging.getLogger(__name__)

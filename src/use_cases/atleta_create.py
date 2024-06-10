@@ -20,36 +20,43 @@ class AtletaCreateUseCase:
 
     def execute(self, http_request: HttpRequest):
         atleta_data: dict = http_request.json
+        
         new_atleta: dict = self._create_atleta(atleta_data)
         atleta_data.update(new_atleta)
 
-        new_clube = self._create_clube(atleta_data)
+        self._create_clube(atleta_data)
 
-        new_contrato = self._create_contrato(atleta_data)
+        self._create_contrato(atleta_data)
 
-        new_posicao = self._create_posicao(atleta_data)
+        self._create_posicao(atleta_data)
 
-        return new_atleta and new_clube and new_contrato and new_posicao
+        return new_atleta
 
     def _create_atleta(self, atleta_data: dict) -> dict:
         return self.atleta_repository.create_atleta(atleta_data)
     
     def _create_clube(self, atleta_data: dict):
         new_clube = atleta_data.get('clube')
-        new_clube['atleta_id'] = atleta_data.get('id')
 
-        return self.clube_repository.create_clube(new_clube)
+        if new_clube:
+            new_clube['atleta_id'] = atleta_data.get('id')
+
+            return self.clube_repository.create_clube(new_clube)
+        return None
 
     def _create_contrato(self, atleta_data: dict):
         new_contrato_clube = atleta_data.get('contrato_clube')
-        new_contrato_clube['atleta_id'] = atleta_data.get('id')
 
-        new_contrato_empresa = atleta_data.get('contrato_empresa')
-        new_contrato_empresa['atleta_id'] = atleta_data.get('id')
-        
-        clube = self.contrato_repository.create_contrato(new_contrato_clube)
-        empresa = self.contrato_repository.create_contrato(new_contrato_empresa)
-        return clube and empresa
+        if new_contrato_clube:
+            new_contrato_clube['atleta_id'] = atleta_data.get('id')
+
+            new_contrato_empresa = atleta_data.get('contrato_empresa')
+            new_contrato_empresa['atleta_id'] = atleta_data.get('id')
+            
+            clube = self.contrato_repository.create_contrato(new_contrato_clube)
+            empresa = self.contrato_repository.create_contrato(new_contrato_empresa)
+            return clube and empresa
+        return None
 
     def _create_posicao(self, atleta_data: dict):
         new_posicao = {}

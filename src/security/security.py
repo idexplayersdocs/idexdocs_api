@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 
 import pytz
-from jose import JWTError, jwt, ExpiredSignatureError
+from jose import ExpiredSignatureError, JWTError, jwt
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
@@ -57,7 +57,6 @@ def login_user(email: str, password: str):
         print(f'Erro ao buscar perfis e permissões do usuário: {e}')
         raise
 
-    access_token_expires = timedelta()
     access_token = create_access_token(
         data={
             'sub': user['email'],
@@ -69,7 +68,6 @@ def login_user(email: str, password: str):
             'roles': roles,
             'permissions': list(permissions),
         },
-        expires_delta=access_token_expires,
     )
 
     return {'access_token': access_token, 'token_type': 'bearer'}
