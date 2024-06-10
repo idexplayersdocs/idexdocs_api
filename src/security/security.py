@@ -75,25 +75,12 @@ def login_user(email: str, password: str):
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-def get_password_hash(password: str):
-    return pwd_context.hash(password)
-
-
-def verify_password(plain_password: str, hashed_password: str):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
 def get_current_user(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get('sub')
         roles = payload.get('roles', [])
         permissions = payload.get('permissions', [])
-
-        if not user_email:
-            raise CredentialsException(
-                'Não foi possível validar as credenciais'
-            )
 
         user = usuario_repository.get_usuario_by_email(user_email)
         if not user:
@@ -104,6 +91,14 @@ def get_current_user(token: str):
     except JWTError:
         raise CredentialsException('Não foi possível validar as credenciais')
     return {'email': user_email, 'roles': roles, 'permissions': permissions}
+
+
+def get_password_hash(password: str):
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str):
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_user_roles_and_permissions(session: Session, user_id: int):
