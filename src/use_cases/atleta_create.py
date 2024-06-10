@@ -38,7 +38,7 @@ class AtletaCreateUseCase:
     def _create_clube(self, atleta_data: dict):
         new_clube = atleta_data.get('clube')
 
-        if new_clube:
+        if new_clube['nome']:
             new_clube['atleta_id'] = atleta_data.get('id')
 
             return self.clube_repository.create_clube(new_clube)
@@ -48,11 +48,11 @@ class AtletaCreateUseCase:
         new_contrato_clube = atleta_data.get('contrato_clube')
         new_contrato_empresa = atleta_data.get('contrato_empresa')
 
-        if new_contrato_clube:
+        if new_contrato_clube['contrato_sub_tipo_id']:
             new_contrato_clube['atleta_id'] = atleta_data.get('id')
             self.contrato_repository.create_contrato(new_contrato_clube)
 
-        if new_contrato_empresa:
+        if new_contrato_empresa['contrato_sub_tipo_id']:
             new_contrato_empresa['atleta_id'] = atleta_data.get('id')
             self.contrato_repository.create_contrato(new_contrato_empresa)
 

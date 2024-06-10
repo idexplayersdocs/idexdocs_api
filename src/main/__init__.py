@@ -235,16 +235,29 @@ router.add_api_route(
                         'example2': {
                             'summary': 'Exemplo de payload para criação de atleta parcial',
                             'value': {
-                                'nome': 'Igor',
+                                'nome': 'Atleta completo',
                                 'data_nascimento': '1985-03-11',
-                                'clube': 'null',
-                                'contrato_clube': 'null',
-                                'contrato_empresa': 'null',
+                                'clube': {
+                                    'nome': 'null',
+                                    'data_inicio': 'null',
+                                },
+                                'contrato_clube': {
+                                    'contrato_sub_tipo_id': 'null',
+                                    'data_inicio': 'null',
+                                    'data_termino': 'null',
+                                    'observacao': 'null',
+                                },
+                                'contrato_empresa': {
+                                    'contrato_sub_tipo_id': 'null',
+                                    'data_inicio': 'null',
+                                    'data_termino': 'null',
+                                    'observacao': 'null',
+                                },
                                 'posicao_primaria': 'atacante',
                                 'posicao_secundaria': 'null',
                                 'posicao_terciaria': 'null',
                             },
-                        }
+                        },
                     },
                 }
             },
@@ -1685,7 +1698,7 @@ router.add_api_route(
                     },
                 },
             }
-        }
+        },
     },
 )
 router.add_api_route(
