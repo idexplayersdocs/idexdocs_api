@@ -1,7 +1,8 @@
+import os
 from datetime import datetime, timedelta
 
 import pytz
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
@@ -17,7 +18,7 @@ from src.repository.model_objects import (
 )
 from src.repository.repo_usuario import UsuarioRepo
 
-SECRET_KEY = '131e9590439e5e7bc331cfa2044861a21a2e39c021610ae2bfa7c94649d4e771'
+SECRET_KEY = os.getenv('TOKEN_KEY')
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
@@ -39,6 +40,41 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
+def login_user(email: str, password: str):
+    user = usuario_repository.get_usuario_by_email(email)
+    if not user:
+        raise BadRequestError('Email ou senha incorretos')
+
+    if not verify_password(password, user['hash_password']):
+        raise BadRequestError('Email ou senha incorretos')
+
+    try:
+        with create_session() as session:
+            roles, permissions = get_user_roles_and_permissions(
+                session, user['id']
+            )
+    except Exception as e:
+        print(f'Erro ao buscar perfis e permissões do usuário: {e}')
+        raise
+
+    access_token_expires = timedelta()
+    access_token = create_access_token(
+        data={
+            'sub': user['email'],
+            'user_id': user['id'],
+            'user_name': user['nome'],
+            'last_login': datetime.now(
+                pytz.timezone('America/Sao_Paulo')
+            ).strftime('%Y-%m-%d %H:%M:%S'),
+            'roles': roles,
+            'permissions': list(permissions),
+        },
+        expires_delta=access_token_expires,
+    )
+
+    return {'access_token': access_token, 'token_type': 'bearer'}
+
+
 def get_password_hash(password: str):
     return pwd_context.hash(password)
 
@@ -47,17 +83,24 @@ def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-async def get_current_user(token: str):
-
+def get_current_user(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email = payload.get('sub')
         roles = payload.get('roles', [])
         permissions = payload.get('permissions', [])
+
         if not user_email:
             raise CredentialsException(
                 'Não foi possível validar as credenciais'
             )
+
+        user = usuario_repository.get_usuario_by_email(user_email)
+        if not user:
+            raise BadRequestError('Email ou senha incorretos')
+
+    except ExpiredSignatureError:
+        raise CredentialsException('Sua sessão expirou')
     except JWTError:
         raise CredentialsException('Não foi possível validar as credenciais')
     return {'email': user_email, 'roles': roles, 'permissions': permissions}
@@ -92,35 +135,3 @@ def get_user_roles_and_permissions(session: Session, user_id: int):
     all_permissions = set(permissions + role_permissions)
 
     return roles, all_permissions
-
-
-def login_user(email: str, password: str):
-    user = usuario_repository.get_usuario_by_email(email)
-    if not user and not verify_password(password, user['hash_passord']):
-        raise BadRequestError('Email ou senha incorretos')
-
-    try:
-        with create_session() as session:
-            roles, permissions = get_user_roles_and_permissions(
-                session, user['id']
-            )
-    except Exception as e:
-        print(f'Erro ao buscar perfis e permissões do usuário: {e}')
-        raise
-
-    access_token_expires = timedelta(minutes=30)
-    access_token = create_access_token(
-        data={
-            'sub': user['email'],
-            'user_id': user['id'],
-            'user_name': user['nome'],
-            'last_login': datetime.now(
-                pytz.timezone('America/Sao_Paulo')
-            ).strftime('%Y-%m-%d %H:%M:%S'),
-            'roles': roles,
-            'permissions': list(permissions),
-        },
-        expires_delta=access_token_expires,
-    )
-
-    return {'access_token': access_token, 'token_type': 'bearer'}

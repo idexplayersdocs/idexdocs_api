@@ -14,6 +14,7 @@ from .types import (
     TokenInvalidError,
     UsuarioExistente,
     UsuarioNaoEncontrado,
+    CredentialsException,
 )
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ def handle_errors(error: Exception) -> HttpResponse:
             UsuarioNaoEncontrado,
             SenhaInvalida,
             ContratoExistente,
+            CredentialsException,
         ),
     ):
         logger.info(f'Handling known error: {error.name}')
