@@ -1,6 +1,7 @@
-from sqlmodel import func, select
+from sqlalchemy.orm.exc import NoResultFound
+from sqlmodel import func, select, update
 
-from src.repository.model_objects import HistoricoLesao
+from src.repository.model_objects import HistoricoLesao, datetime_now_sec
 
 from .base_repo import create_session
 
@@ -55,3 +56,21 @@ class LesaoRepo:
             session.commit()
             session.refresh(new_lesao)
             return {'id': new_lesao.id}
+
+    def update_lesao(self, lesao_data: dict) -> dict:
+        with self.session_factory() as session:
+            result = session.exec(
+                update(HistoricoLesao)
+                .where(HistoricoLesao.id == lesao_data['lesao_id'])
+                .values(
+                    data_lesao=lesao_data['data_lesao'],
+                    descricao=lesao_data['descricao'],
+                    data_retorno=lesao_data['data_retorno'],
+                    data_atualizado=datetime_now_sec(),
+                )
+            )
+            if result.rowcount == 0:
+                raise NoResultFound(
+                    'Lesão não encontrada no histórico com o ID indicado'
+                )
+            session.commit()

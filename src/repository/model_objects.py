@@ -338,7 +338,7 @@ class HistoricoLesao(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     data_lesao: date
     descricao: str
-    data_retorno: date
+    data_retorno: date | None = None
     data_criacao: datetime = Field(
         default_factory=datetime_now_sec, nullable=False
     )
