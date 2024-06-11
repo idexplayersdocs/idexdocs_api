@@ -13,8 +13,8 @@ def validate_date_format(date_str: str) -> str:
 
 
 class Clube(BaseModel):
-    nome: str
-    data_inicio: str
+    nome: str | None
+    data_inicio: str | None
 
     _validate_data_inicio = field_validator('data_inicio')(
         validate_date_format
@@ -22,9 +22,9 @@ class Clube(BaseModel):
 
 
 class Contrato(BaseModel):
-    contrato_sub_tipo_id: int
-    data_inicio: str
-    data_termino: str
+    contrato_sub_tipo_id: int | None
+    data_inicio: str | None
+    data_termino: str | None
     observacao: str | None = None
 
     _validate_data_inicio = field_validator('data_inicio')(
