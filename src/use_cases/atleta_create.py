@@ -57,10 +57,15 @@ class AtletaCreateUseCase:
             self.contrato_repository.create_contrato(new_contrato_empresa)
 
     def _create_posicao(self, atleta_data: dict):
-        new_posicao = {}
-        new_posicao['atleta_id'] = atleta_data.get('id')
-        new_posicao['primeira'] = atleta_data.get('posicao_primaria')
-        new_posicao['segunda'] = atleta_data.get('posicao_secundaria')
-        new_posicao['terceira'] = atleta_data.get('posicao_terciaria')
+        def _get_value_or_none(key):
+            value = atleta_data.get(key)
+            return None if value == '' else value
+
+        new_posicao = {
+            'atleta_id': atleta_data.get('id'),
+            'primeira': _get_value_or_none('posicao_primaria'),
+            'segunda': _get_value_or_none('posicao_secundaria'),
+            'terceira': _get_value_or_none('posicao_terciaria'),
+        }
 
         return self.posicao_repository.create_posicao(new_posicao)
