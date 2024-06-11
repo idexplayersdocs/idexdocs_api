@@ -1,6 +1,7 @@
-from sqlmodel import func, select
+from sqlalchemy.orm.exc import NoResultFound
+from sqlmodel import func, select, update
 
-from src.repository.model_objects import HistoricoCompeticao
+from src.repository.model_objects import HistoricoCompeticao, datetime_now_sec
 
 from .base_repo import create_session
 
@@ -65,3 +66,21 @@ class CompeticaoRepo:
             session.commit()
             session.refresh(new_competicao)
             return {'id': new_competicao.id}
+
+    def update_competicao(self, competicao_data: dict) -> dict:
+        competicao_data.update({'data_atualizado': datetime_now_sec()})
+
+        with self.session_factory() as session:
+            result = session.exec(
+                update(HistoricoCompeticao)
+                .where(
+                    HistoricoCompeticao.id
+                    == competicao_data.pop('competicao_id')
+                )
+                .values(**competicao_data)
+            )
+            if result.rowcount == 0:
+                raise NoResultFound(
+                    'Competição não encontrada no histórico com o ID indicado'
+                )
+            session.commit()

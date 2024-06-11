@@ -3,8 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 
 
-class CompeticaoCreateSchema(BaseModel):
-    atleta_id: int = Field(..., gt=0)
+class CompeticaoBaseSchema(BaseModel):
     nome: str
     data_competicao: str
     jogos_completos: int = Field(..., ge=0)
@@ -20,6 +19,14 @@ class CompeticaoCreateSchema(BaseModel):
             return v
         except ValueError:
             raise ValueError('Formato de data inválido, utilize YYYY-MM-DD')
+
+
+class CompeticaoCreateSchema(CompeticaoBaseSchema):
+    atleta_id: int = Field(..., gt=0)
+
+
+class CompeticaoUpdateSchema(CompeticaoBaseSchema):
+    competicao_id: int = Field(..., gt=0)
 
 
 class CompeticaoCreateResponse(BaseModel):

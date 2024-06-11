@@ -10,6 +10,7 @@ from src.main.rest.clube_create import clube_create
 from src.main.rest.clube_list import clube
 from src.main.rest.competicao_create import competicao_create
 from src.main.rest.competicao_list import competicao
+from src.main.rest.competicao_update import competicao_update
 from src.main.rest.contrato_create import contrato_create
 from src.main.rest.contrato_list import contrato_list
 from src.main.rest.contrato_tipo_list import contrato_tipo_list
@@ -50,6 +51,7 @@ from src.schemas.clube import ClubeCreateResponse, ClubeCreateSchema
 from src.schemas.competicao import (
     CompeticaoCreateResponse,
     CompeticaoCreateSchema,
+    CompeticaoUpdateSchema,
 )
 from src.schemas.contrato import (
     ContratoCreateResponse,
@@ -1100,6 +1102,38 @@ router.add_api_route(
                     }
                 },
             },
+        },
+    },
+)
+router.add_api_route(
+    '/update/competicao',
+    endpoint=competicao_update,
+    tags=['Competição'],
+    methods=['PUT'],
+    response_model=CompeticaoCreateResponse,
+    openapi_extra={
+        'requestBody': {
+            'content': {
+                'application/json': {
+                    'schema': CompeticaoUpdateSchema.model_json_schema(),
+                    'examples': {
+                        'example1': {
+                            'summary': 'Exemplo de payload para edição de competição',
+                            'value': {
+                                'competicao_id': 1,
+                                'nome': 'Brasileiro 2023',
+                                'data_competicao': '2023-06-13',
+                                'jogos_completos': 5,
+                                'jogos_parciais': 1,
+                                'minutagem': 480,
+                                'gols': 12,
+                                'assistencias': 2,
+                            },
+                        }
+                    },
+                }
+            },
+            'required': True,
         },
     },
 )
