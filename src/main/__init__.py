@@ -218,13 +218,13 @@ router.add_api_route(
                                 'contrato_clube': {
                                     'contrato_sub_tipo_id': 1,
                                     'data_inicio': '2024-05-01',
-                                    'data_fim': '2025-05-01',
+                                    'data_termino': '2025-05-01',
                                     'observacao': 'null',
                                 },
                                 'contrato_empresa': {
                                     'contrato_sub_tipo_id': 2,
                                     'data_inicio': '2024-05-01',
-                                    'data_fim': '2025-05-01',
+                                    'data_termino': '2025-05-01',
                                     'observacao': 'null',
                                 },
                                 'posicao_primaria': 'atacante',
