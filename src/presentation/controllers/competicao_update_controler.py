@@ -6,14 +6,14 @@ from src.presentation.http_types.http_response import (
 from src.presentation.interfaces.controller_interface import (
     ControllerInterface,
 )
-from src.use_cases.competicao_create import CompeticaoCreateUseCase
+from src.use_cases.competicao_update import CompeticaoUpdateUseCase
 
 
-class CompeticaoCreateController(ControllerInterface):
-    def __init__(self, use_case: CompeticaoCreateUseCase):
+class CompeticaoUpdateController(ControllerInterface):
+    def __init__(self, use_case: CompeticaoUpdateUseCase):
         self._use_case = use_case
 
     def handle(self, http_request: HttpRequest) -> HttpResponse:
         result: list = self._use_case.execute(http_request=http_request)
 
-        return HttpResponse(body=result, status_code=HttpStatusCode.CREATED.value)
+        return HttpResponse(body=result, status_code=HttpStatusCode.OK.value)
