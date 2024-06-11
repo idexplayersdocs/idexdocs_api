@@ -18,9 +18,10 @@ class VideoListUseCase:
 
     def execute(self, http_request: HttpRequest):
         atleta_id: int = http_request.path_params.get('id')
+        filters: dict = dict(http_request.query_params.items())
 
         self._check_atleta_exists(atleta_id)
-        total_count, blob_urls = self._get_blob_url(atleta_id)
+        total_count, blob_urls = self._get_blob_url(atleta_id, filters)
 
         return self._format_response(total_count, blob_urls)
 
@@ -29,8 +30,8 @@ class VideoListUseCase:
         if atleta is None:
             raise NotFoundError('Atleta não encontrado')
 
-    def _get_blob_url(self, atleta_id: int):
-        return self.video_repository.get_videos_urls(atleta_id)
+    def _get_blob_url(self, atleta_id: int, filters: dict):
+        return self.video_repository.get_videos_urls(atleta_id, filters)
 
     def _format_response(self, total_count: int, result: list[dict]):
         return {
