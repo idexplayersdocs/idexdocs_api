@@ -25,6 +25,7 @@ from src.main.rest.files_update import imagem_update
 from src.main.rest.files_upload import multiple_files_upload
 from src.main.rest.lesao_create import lesao_create
 from src.main.rest.lesao_list import lesao
+from src.main.rest.lesao_update import lesao_update
 from src.main.rest.observacao_create import observacao_create
 from src.main.rest.observacao_list import observacao
 from src.main.rest.pdf_create import pdf_create
@@ -62,7 +63,11 @@ from src.schemas.controle import (
     ControleListResponse,
 )
 from src.schemas.file_upload import FileUpdateSchema
-from src.schemas.lesao import LesaoCreateResponse, LesaoCreateSchema
+from src.schemas.lesao import (
+    LesaoCreateResponse,
+    LesaoCreateSchema,
+    LesaoUpdateSchema,
+)
 from src.schemas.observacao import (
     ObservacaoCreateResponse,
     ObservacaoCreateSchema,
@@ -1007,8 +1012,7 @@ router.add_api_route(
                     'schema': LesaoCreateSchema.model_json_schema(),
                     'examples': {
                         'example1': {
-                            'summary': 'Exemplo de payload para criação de clube',
-                            'description': 'Caso seja o clube atual não insesir data_fim',
+                            'summary': 'Exemplo de payload para criação de lesão',
                             'value': {
                                 'atleta_id': 1,
                                 'descricao': 'Entorse de tornozelo esquerdo',
@@ -1020,22 +1024,33 @@ router.add_api_route(
             },
             'required': True,
         },
-        'responses': {
-            '409': {
-                'description': 'Conflict',
-                'content': {
-                    'text/plain': {
-                        'example': {
-                            'errors': [
-                                {
-                                    'title': 'Conflict',
-                                    'message': 'O atleta já possui clube ativo',
-                                }
-                            ]
+    },
+)
+router.add_api_route(
+    '/update/lesao',
+    endpoint=lesao_update,
+    tags=['Lesão'],
+    methods=['PUT'],
+    response_model=LesaoCreateResponse,
+    openapi_extra={
+        'requestBody': {
+            'content': {
+                'application/json': {
+                    'schema': LesaoUpdateSchema.model_json_schema(),
+                    'examples': {
+                        'example1': {
+                            'summary': 'Exemplo de payload para edição de lesão',
+                            'value': {
+                                'lesao_id': 1,
+                                'data_lesao': '2024-06-11',
+                                'data_retorno': '2024-06-11',
+                                'descricao': 'Rompimento de LCA joelho direito',
+                            },
                         }
-                    }
-                },
+                    },
+                }
             },
+            'required': True,
         },
     },
 )
