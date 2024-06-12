@@ -8,7 +8,7 @@ class ClubeCreateSchema(BaseModel):
     nome: str
     data_inicio: str
     clube_atual: bool
-    data_fim: str | None
+    data_fim: str
 
     @field_validator('data_inicio', 'data_fim')
     def validate_date(cls, v):

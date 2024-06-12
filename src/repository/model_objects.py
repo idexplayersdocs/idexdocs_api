@@ -308,7 +308,8 @@ class HistoricoClube(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     nome: str
     data_inicio: date
-    data_fim: date | None = None
+    data_fim: date
+    clube_atual: bool
     data_criacao: datetime = Field(
         default_factory=datetime_now_sec, nullable=False
     )

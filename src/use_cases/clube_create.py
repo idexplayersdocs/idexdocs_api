@@ -21,9 +21,8 @@ class ClubeCreateUseCase:
 
         self._check_atleta_exists(atleta_id)
 
-        if clube_atual:
-            data_fim: str = clube_data.pop('data_fim')
-            self._update_data_fim_clube_anterior(atleta_id, data_fim)
+        if clube_atual is True:
+            self._check_clube_ativo_exists(atleta_id)
 
         return self._create_clube(clube_data)
 
@@ -32,25 +31,14 @@ class ClubeCreateUseCase:
         if atleta is None:
             raise NotFoundError('Atleta não encontrado')
 
-    def _update_data_fim_clube_anterior(self, atleta_id: int, data_fim: str):
+    def _check_clube_ativo_exists(self, atleta_id: int):
         _, clubes = self.clube_repository.list_clube(atleta_id)
 
         for clube in clubes:
-            if clube['data_fim'] is None:
-                self.clube_repository.update_data_fim(
-                    clube['clube_id'], data_fim
+            if clube['clube_atual'] is True:
+                raise ClubeAtivoExistente(
+                    'O atleta já possui clube ativo. Inative antes de criar um novo.'
                 )
 
-    def _check_clube_ativo_exists(self, clube_data: dict):
-        _, clubes = self.clube_repository.list_clube(
-            clube_data.get('atleta_id')
-        )
-
-        for clube in clubes:
-            if clube['data_fim'] is None:
-                raise ClubeAtivoExistente('O atleta já possui clube ativo')
-
     def _create_clube(self, clube_data: dict):
-        clube = self.clube_repository.create_clube(clube_data)
-
-        return clube
+        return self.clube_repository.create_clube(clube_data)
