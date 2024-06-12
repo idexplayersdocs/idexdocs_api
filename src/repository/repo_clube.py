@@ -1,7 +1,7 @@
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import func, select, update
 
-from src.repository.model_objects import HistoricoClube
+from src.repository.model_objects import HistoricoClube, datetime_now_sec
 
 from .base_repo import create_session
 
@@ -19,7 +19,7 @@ class ClubeRepo:
                 'data_fim': data_fim.strftime('%Y-%m-%d')
                 if data_fim is not None
                 else None,
-                'clube_atual': clube_atual
+                'clube_atual': clube_atual,
             }
             for id_, nome, data_inicio, data_fim, clube_atual in result
         ]
@@ -64,10 +64,12 @@ class ClubeRepo:
             return {'id': new_clube.id}
 
     def update_clube(self, clube_data: dict):
+        clube_data.update({'data_atualizado': datetime_now_sec()})
+
         with self.session_factory() as session:
             result = session.exec(
                 update(HistoricoClube)
-                .where(HistoricoClube.id == clube_data)
+                .where(HistoricoClube.id == clube_data.pop('clube_id'))
                 .values(**clube_data)
             )
 
@@ -75,3 +77,5 @@ class ClubeRepo:
                 raise NoResultFound(
                     'Clube não encontrado no histórico com o ID indicado'
                 )
+
+            session.commit()
