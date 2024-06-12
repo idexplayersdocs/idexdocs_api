@@ -1,6 +1,5 @@
-from datetime import datetime
-
-from sqlmodel import func, select
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import func, select, update
 
 from src.repository.model_objects import HistoricoClube
 
@@ -20,8 +19,9 @@ class ClubeRepo:
                 'data_fim': data_fim.strftime('%Y-%m-%d')
                 if data_fim is not None
                 else None,
+                'clube_atual': clube_atual
             }
-            for id_, nome, data_inicio, data_fim in result
+            for id_, nome, data_inicio, data_fim, clube_atual in result
         ]
 
         return clube_list
@@ -33,6 +33,7 @@ class ClubeRepo:
                 HistoricoClube.nome,
                 HistoricoClube.data_inicio,
                 HistoricoClube.data_fim,
+                HistoricoClube.clube_atual,
             ).where(HistoricoClube.atleta_id == atleta_id)
 
             # conta o número total de items sem paginação
@@ -62,15 +63,15 @@ class ClubeRepo:
             session.refresh(new_clube)
             return {'id': new_clube.id}
 
-    def update_data_fim(self, historico_clube_id: int, new_data_fim: str):
+    def update_clube(self, clube_data: dict):
         with self.session_factory() as session:
-            statement = select(HistoricoClube).where(
-                HistoricoClube.id == historico_clube_id
+            result = session.exec(
+                update(HistoricoClube)
+                .where(HistoricoClube.id == clube_data)
+                .values(**clube_data)
             )
-            clube = session.exec(statement).one()
 
-            clube.data_fim = new_data_fim
-            clube.data_atualizado = datetime.now()
-            session.add(clube)
-            session.commit()
-            session.refresh(clube)
+            if result.rowcount == 0:
+                raise NoResultFound(
+                    'Clube não encontrado no histórico com o ID indicado'
+                )

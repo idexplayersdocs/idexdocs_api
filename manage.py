@@ -170,6 +170,17 @@ def migrate():
     except Exception as e:
         print(e)
 
+@cli.command
+@click.option('--message', '-m', help='Migration message')
+def downgrade(message):
+    """Run Alembic revision --autogenerate command."""
+    configure_app(os.getenv('APPLICATION_CONFIG'))
+
+    try:
+        command = ['alembic', 'downgrade', message]
+        subprocess.run(command)
+    except Exception as e:
+        print(e)
 
 @cli.command
 @click.option('--server', '-s', default='uvicorn', help='Application server')
