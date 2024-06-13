@@ -609,6 +609,7 @@ router.add_api_route(
                                 'type': 'Relacionamento',
                                 'data': [
                                     {
+                                        'competicao_id': 1,
                                         'nome': 'Competição 1',
                                         'data_competicao': '2022-03-01',
                                         'jogos_completos': 5,
@@ -618,6 +619,7 @@ router.add_api_route(
                                         'assistencias': 1,
                                     },
                                     {
+                                        'competicao_id': 2,
                                         'nome': 'Competição 2',
                                         'data_competicao': '2022-04-01',
                                         'jogos_completos': 7,
@@ -787,14 +789,18 @@ router.add_api_route(
                             'type': 'Clubes',
                             'data': [
                                 {
-                                    'nome': 'Clube A',
-                                    'data_inicio': '2023-01-01',
-                                    'data_fim': '2023-01-01',
+                                    "clube_id": 1,
+                                    "nome": "Novo clube 1",
+                                    "data_inicio": "2024-01-01",
+                                    "data_fim": "2024-06-01",
+                                    "clube_atual": False
                                 },
                                 {
-                                    'nome': 'Clube B',
-                                    'data_inicio': '2023-01-01',
-                                    'data_fim': None,
+                                    "clube_id": 2,
+                                    "nome": "Clube antigo 1",
+                                    "data_inicio": "2023-01-01",
+                                    "data_fim": "2023-06-01",
+                                    "clube_atual": False
                                 },
                             ],
                         }
@@ -1053,6 +1059,7 @@ router.add_api_route(
                                 'atleta_id': 1,
                                 'descricao': 'Entorse de tornozelo esquerdo',
                                 'data_lesao': '2024-01-01',
+                                'data_retorno': '2024-06-01',
                             },
                         }
                     },

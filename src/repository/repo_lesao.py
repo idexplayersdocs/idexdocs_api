@@ -13,11 +13,12 @@ class LesaoRepo:
     def _create_lesao_objects(self, result: list) -> list[dict]:
         lesao_list = [
             {
+                'lesao_id': id_,
                 'data_lesao': data_lesao.strftime('%Y-%m-%d'),
                 'descricao': descricao,
                 'data_retorno': data_retorno.strftime('%Y-%m-%d'),
             }
-            for data_lesao, descricao, data_retorno in result
+            for id_, descricao, data_lesao, data_retorno in result
         ]
 
         return lesao_list
@@ -25,8 +26,9 @@ class LesaoRepo:
     def list_lesao(self, atleta_id: int, filters: dict = None):
         with self.session_factory() as session:
             query = select(
-                HistoricoLesao.data_lesao,
+                HistoricoLesao.id,
                 HistoricoLesao.descricao,
+                HistoricoLesao.data_lesao,
                 HistoricoLesao.data_retorno,
             ).where(HistoricoLesao.atleta_id == atleta_id)
 
