@@ -13,6 +13,7 @@ class CompeticaoRepo:
     def _create_competicao_object(self, result: list) -> list[dict]:
         competicao_list = [
             {
+                'competicao_id': id_,
                 'nome': nome,
                 'data_competicao': data_competicao.strftime('%Y-%m-%d'),
                 'jogos_completos': jogos_completos,
@@ -21,7 +22,7 @@ class CompeticaoRepo:
                 'gols': gols,
                 'assistencias': assistencias,
             }
-            for nome, data_competicao, jogos_completos, jogos_parciais, minutagem, gols, assistencias in result
+            for id_, nome, data_competicao, jogos_completos, jogos_parciais, minutagem, gols, assistencias in result
         ]
 
         return competicao_list
@@ -29,6 +30,7 @@ class CompeticaoRepo:
     def list_competicao(self, atleta_id: int, filters: dict = None):
         with self.session_factory() as session:
             query = select(
+                HistoricoCompeticao.id,
                 HistoricoCompeticao.nome,
                 HistoricoCompeticao.data_competicao,
                 HistoricoCompeticao.jogos_completos,
