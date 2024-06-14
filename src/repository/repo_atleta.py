@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import pytz
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from sqlmodel import func, select
+from sqlmodel import func, select, and_
 
 from .base_repo import create_session
 from .model_objects import (
@@ -213,12 +213,14 @@ class AtletaRepo:
                 )
                 .outerjoin(Posicao, Atleta.id == Posicao.atleta_id)
                 .outerjoin(
-                    HistoricoClube, HistoricoClube.atleta_id == Atleta.id
+                    HistoricoClube,
+                    and_(
+                        HistoricoClube.atleta_id == Atleta.id,
+                        HistoricoClube.clube_atual == 1,
+                    ),
                 )
                 .outerjoin(AtletaAvatar, AtletaAvatar.atleta_id == Atleta.id)
-                .where(
-                    Atleta.id == atleta_id, HistoricoClube.data_fim.is_(None)
-                )
+                .where(Atleta.id == atleta_id)
             ).all()
 
             # Combine the results together into a list of AtletaDetails
