@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import pytz
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from sqlmodel import func, select, and_
+from sqlmodel import and_, func, select
 
 from .base_repo import create_session
 from .model_objects import (

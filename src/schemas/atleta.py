@@ -49,12 +49,15 @@ class AtletaCreateSchema(BaseModel):
     )
     def validate_posicao_id(cls, v):
         allowed_positions = (
-            'atacante',
             'goleiro',
-            'lateral',
-            'meia',
-            'volante',
+            'lateral direito',
+            'lateral esquerdo',
             'zagueiro',
+            'volante',
+            'meia armador',
+            'meia atacante',
+            'atacante',
+            'centroavante',
         )
         if v and v not in allowed_positions:
             raise ValueError(
