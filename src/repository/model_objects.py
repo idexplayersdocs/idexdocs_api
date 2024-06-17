@@ -264,12 +264,15 @@ class ContratoVersao(SQLModel, table=True):
 
 
 class PosicaoTypes(enum.Enum):
-    atacante = 'atacante'
-    goleiro = 'goleiro'
-    lateral = 'lateral'
-    meia = 'meia'
-    volante = 'volante'
-    zagueiro = 'zagueiro'
+    goleiro =  'goleiro'
+    lateral_direito = 'lateral direito'
+    lateral_esquerdo = 'lateral esquerdo'
+    zagueiro =  'zagueiro'
+    volante =  'volante'
+    meia_armador = 'meia armador'
+    meia_atacante = 'meia atacante'
+    atacante =  'atacante'
+    centroavante = 'centroavante'
 
 
 class Posicao(SQLModel, table=True):
