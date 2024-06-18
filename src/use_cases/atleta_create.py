@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from src.presentation.http_types.http_request import HttpRequest
 from src.repository.repo_atleta import AtletaRepo
 from src.repository.repo_posicao import PosicaoRepo
@@ -26,15 +28,14 @@ class AtletaCreateUseCase:
         return self.atleta_repository.create_atleta(atleta_data)
 
     def _create_posicao(self, atleta_data: dict):
-        def _get_value_or_none(key):
-            value = atleta_data.get(key)
-            return None if value == '' else value
 
-        new_posicao = {
-            'atleta_id': atleta_data.get('id'),
-            'primeira': _get_value_or_none('posicao_primaria'),
-            'segunda': _get_value_or_none('posicao_secundaria'),
-            'terceira': _get_value_or_none('posicao_terciaria'),
-        }
+        new_posicao = OrderedDict(
+            [
+                ('atleta_id', atleta_data.get('id')),
+                ('primeira', atleta_data.get('posicao_primaria')),
+                ('segunda', atleta_data.get('posicao_secundaria')),
+                ('terceira', atleta_data.get('posicao_terciaria')),
+            ]
+        )
 
         return self.posicao_repository.create_posicao(new_posicao)

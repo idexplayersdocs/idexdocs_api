@@ -137,6 +137,7 @@ class Atleta(SQLModel, table=True):
 
     relacionamento: 'Relacionamento' = Relationship(back_populates='atleta')
     contrato: list['Contrato'] = Relationship(back_populates='atleta')
+    posicoes: list['AtletaPosicao'] = Relationship(back_populates='atleta')
 
 
 class AtletaAvatar(SQLModel, table=True):
@@ -263,29 +264,29 @@ class ContratoVersao(SQLModel, table=True):
     contrato_id: int | None = Field(default=None, foreign_key='contrato.id')
 
 
-class PosicaoTypes(enum.Enum):
-    goleiro =  'goleiro'
-    lateral_direito = 'lateral direito'
-    lateral_esquerdo = 'lateral esquerdo'
-    zagueiro =  'zagueiro'
-    volante =  'volante'
-    meia_armador = 'meia armador'
-    meia_atacante = 'meia atacante'
-    atacante =  'atacante'
-    centroavante = 'centroavante'
-
-
 class Posicao(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    primeira: str = Field(sa_column=Column(Enum(PosicaoTypes)))
-    segunda: str | None = Field(sa_column=Column(Enum(PosicaoTypes)))
-    terceira: str | None = Field(sa_column=Column(Enum(PosicaoTypes)))
+    nome: str | None
     data_criacao: datetime = Field(
         default_factory=datetime_now_sec, nullable=False
     )
     data_atualizado: datetime | None = None
 
-    atleta_id: int = Field(default=None, foreign_key='atleta.id')
+
+class AtletaPosicao(SQLModel, table=True):
+    atleta_id: int | None = Field(
+        default=None, foreign_key='atleta.id', primary_key=True
+    )
+    posicao_id: int | None = Field(
+        default=None, foreign_key='posicao.id', primary_key=True
+    )
+    preferencia: str = Field(sa_column=Field(primary_key=True, max_length=20))
+    data_criacao: datetime = Field(
+        default_factory=datetime_now_sec, nullable=False
+    )
+    data_atualizado: datetime | None = None
+
+    atleta: Atleta | None = Relationship(back_populates='posicoes')
 
 
 class Relacionamento(SQLModel, table=True):
