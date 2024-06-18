@@ -208,7 +208,7 @@ class AtletaRepo:
                 return None
 
             atleta_with_posicao = (
-                select(AtletaPosicao.preferencia, Posicao.nome)
+                select(AtletaPosicao.preferencia, Posicao.id)
                 .join(Posicao, Posicao.id == AtletaPosicao.posicao_id)
                 .where(AtletaPosicao.atleta_id == atleta_id)
             )
