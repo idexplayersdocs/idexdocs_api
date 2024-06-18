@@ -1,8 +1,8 @@
-"""Initial
+"""First migration
 
-Revision ID: c722f0a5bff3
+Revision ID: d1ea98482c76
 Revises: 
-Create Date: 2024-06-05 08:13:34.243231
+Create Date: 2024-06-17 21:03:20.515328
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c722f0a5bff3'
+revision: str = 'd1ea98482c76'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -52,6 +52,13 @@ def upgrade() -> None:
     sa.Column('data_atualizado', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('posicao',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('nome', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('data_criacao', sa.DateTime(), nullable=False),
+    sa.Column('data_atualizado', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('role',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('nome', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -83,6 +90,16 @@ def upgrade() -> None:
     sa.Column('atleta_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['atleta_id'], ['atleta.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('atletaposicao',
+    sa.Column('atleta_id', sa.Integer(), nullable=False),
+    sa.Column('posicao_id', sa.Integer(), nullable=False),
+    sa.Column('preferencia', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('data_criacao', sa.DateTime(), nullable=False),
+    sa.Column('data_atualizado', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['atleta_id'], ['atleta.id'], ),
+    sa.ForeignKeyConstraint(['posicao_id'], ['posicao.id'], ),
+    sa.PrimaryKeyConstraint('atleta_id', 'posicao_id')
     )
     op.create_table('atletavideos',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -274,7 +291,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('nome', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('data_inicio', sa.Date(), nullable=False),
-    sa.Column('data_fim', sa.Date(), nullable=True),
+    sa.Column('data_fim', sa.Date(), nullable=False),
+    sa.Column('clube_atual', sa.Boolean(), nullable=False),
     sa.Column('data_criacao', sa.DateTime(), nullable=False),
     sa.Column('data_atualizado', sa.DateTime(), nullable=True),
     sa.Column('atleta_id', sa.Integer(), nullable=True),
@@ -312,7 +330,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('data_lesao', sa.Date(), nullable=False),
     sa.Column('descricao', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('data_retorno', sa.Date(), nullable=False),
+    sa.Column('data_retorno', sa.Date(), nullable=True),
     sa.Column('data_criacao', sa.DateTime(), nullable=False),
     sa.Column('data_atualizado', sa.DateTime(), nullable=True),
     sa.Column('atleta_id', sa.Integer(), nullable=True),
@@ -325,17 +343,6 @@ def upgrade() -> None:
     sa.Column('descricao', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('data_criacao', sa.DateTime(), nullable=False),
     sa.Column('atleta_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['atleta_id'], ['atleta.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('posicao',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('primeira', sa.Enum('atacante', 'goleiro', 'lateral', 'meia', 'volante', 'zagueiro', name='posicaotypes'), nullable=True),
-    sa.Column('segunda', sa.Enum('atacante', 'goleiro', 'lateral', 'meia', 'volante', 'zagueiro', name='posicaotypes'), nullable=True),
-    sa.Column('terceira', sa.Enum('atacante', 'goleiro', 'lateral', 'meia', 'volante', 'zagueiro', name='posicaotypes'), nullable=True),
-    sa.Column('data_criacao', sa.DateTime(), nullable=False),
-    sa.Column('data_atualizado', sa.DateTime(), nullable=True),
-    sa.Column('atleta_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['atleta_id'], ['atleta.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -429,7 +436,6 @@ def downgrade() -> None:
     op.drop_table('usuario')
     op.drop_table('rolepermissao')
     op.drop_table('relacionamento')
-    op.drop_table('posicao')
     op.drop_table('historicoobservacao')
     op.drop_table('historicolesao')
     op.drop_table('historicocontrole')
@@ -445,10 +451,12 @@ def downgrade() -> None:
     op.drop_table('caracteristicaatacante')
     op.drop_table('caracteristica')
     op.drop_table('atletavideos')
+    op.drop_table('atletaposicao')
     op.drop_table('atletaimagens')
     op.drop_table('atletaavatar')
     op.drop_table('usuariotipo')
     op.drop_table('role')
+    op.drop_table('posicao')
     op.drop_table('permissao')
     op.drop_table('perfil')
     op.drop_table('contratotipo')

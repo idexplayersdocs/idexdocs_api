@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 from datetime import datetime, timedelta
 
 import pytz
@@ -10,6 +10,7 @@ from .base_repo import create_session
 from .model_objects import (
     Atleta,
     AtletaAvatar,
+    AtletaPosicao,
     Contrato,
     HistoricoClube,
     Posicao,
@@ -56,7 +57,7 @@ class AtletaRepo:
                 'id': id_,
                 'nome': nome,
                 'data_nascimento': data_nascimento.strftime('%Y-%m-%d'),
-                'posicao_primaria': primeira.value if primeira else None,
+                'posicao_primaria': posicao,
                 'clube_atual': clube,
                 'data_proxima_avaliacao_relacionamento': (
                     data_avaliacao + timedelta(days=30)
@@ -65,7 +66,7 @@ class AtletaRepo:
                 else None,
                 'ativo': ativo,
             }
-            for id_, nome, data_nascimento, primeira, clube, data_avaliacao, ativo in result
+            for id_, nome, data_nascimento, posicao, clube, data_avaliacao, ativo in result
         ]
 
     def _create_atleta_detail_object(self, result: AtletaDetails) -> dict:
@@ -74,13 +75,13 @@ class AtletaRepo:
             'data_nascimento': result.atleta.data_nascimento.strftime(
                 '%Y-%m-%d'
             ),
-            'posicao_primaria': result.primeira_posicao.value
+            'posicao_primaria': result.primeira_posicao
             if result.primeira_posicao
             else None,
-            'posicao_secundaria': result.segunda_posicao.value
+            'posicao_secundaria': result.segunda_posicao
             if result.segunda_posicao
             else None,
-            'posicao_terciaria': result.terceira_posicao.value
+            'posicao_terciaria': result.terceira_posicao
             if result.terceira_posicao
             else None,
             'clube_atual': result.clube_atual,
@@ -112,18 +113,24 @@ class AtletaRepo:
                 .subquery()
             )
 
+            posicao_subquery = (
+                select(AtletaPosicao.atleta_id, Posicao.nome)
+                .outerjoin(Posicao, Posicao.id == AtletaPosicao.posicao_id)
+                .where(AtletaPosicao.preferencia == 'primeira')
+                .subquery()
+            )
+
             query = (
                 select(
                     Atleta.id.label('id_'),
                     Atleta.nome.label('nome'),
                     Atleta.data_nascimento.label('data_nascimento'),
-                    Posicao.primeira,
+                    posicao_subquery.c.nome,
                     HistoricoClube.nome.label('clube'),
                     Relacionamento.data_avaliacao,
                     Atleta.ativo,
                 )
                 .select_from(Atleta)
-                .outerjoin(Posicao, Posicao.atleta_id == Atleta.id)
                 .outerjoin(
                     HistoricoClube, Atleta.id == HistoricoClube.atleta_id
                 )
@@ -138,18 +145,15 @@ class AtletaRepo:
                         )
                     ),
                 )
+                .outerjoin(
+                    posicao_subquery, posicao_subquery.c.atleta_id == Atleta.id
+                )
                 .where(HistoricoClube.data_fim.is_(None))
                 .order_by(Atleta.id)
             )
 
             if atleta := filters.get('atleta'):
-                query = query.filter(Atleta.nome == atleta)
-
-            if posicao := filters.get('posicao'):
-                query = query.filter(Posicao.primeira == posicao)
-
-            if clube := filters.get('clube'):
-                query = query.filter(HistoricoClube.nome == clube)
+                query = query.where(Atleta.nome.contains(atleta))
 
             # conta o número total de items sem paginação
             total_count = session.exec(
@@ -199,19 +203,27 @@ class AtletaRepo:
                 .all()
             )
 
+            # Retorna caso não exista atleta
             if not atletas_with_contrato:
                 return None
 
-            additional_info = session.exec(
+            atleta_with_posicao = (
+                select(AtletaPosicao.preferencia, Posicao.nome)
+                .join(Posicao, Posicao.id == AtletaPosicao.posicao_id)
+                .where(AtletaPosicao.atleta_id == atleta_id)
+            )
+            posicoes = session.exec(atleta_with_posicao).all()
+            posicao_mapping = {
+                preferencia: nome_posicao
+                for preferencia, nome_posicao in posicoes
+            }
+
+            atleta_additional_info = session.exec(
                 select(
                     Atleta.data_nascimento,
-                    Posicao.primeira,
-                    Posicao.segunda,
-                    Posicao.terceira,
                     HistoricoClube.nome.label('clube'),
                     AtletaAvatar.blob_url,
                 )
-                .outerjoin(Posicao, Atleta.id == Posicao.atleta_id)
                 .outerjoin(
                     HistoricoClube,
                     and_(
@@ -228,9 +240,9 @@ class AtletaRepo:
                 AtletaDetails(
                     atleta=atleta,
                     data_nascimento=info.data_nascimento,
-                    primeira_posicao=info.primeira,
-                    segunda_posicao=info.segunda,
-                    terceira_posicao=info.terceira,
+                    primeira_posicao=posicao_mapping.get('primeira'),
+                    segunda_posicao=posicao_mapping.get('segunda'),
+                    terceira_posicao=posicao_mapping.get('terceira'),
                     clube_atual=info.clube,
                     avatar_url=info.blob_url,
                     contratos=[
@@ -250,7 +262,9 @@ class AtletaRepo:
                         for contrato in atleta.contrato
                     ],
                 )
-                for atleta, info in zip(atletas_with_contrato, additional_info)
+                for atleta, info in zip(
+                    atletas_with_contrato, atleta_additional_info
+                )
             ]
         try:
 
@@ -311,15 +325,27 @@ class AtletaRepo:
                     setattr(atleta, key, value)
 
             # Faz a atualização de posições se existirem valores novos para atualizar
-            posicao = session.exec(
-                select(Posicao).where(Posicao.atleta_id == atleta_id)
-            ).one()
-            posicao.primeira = atleta_data['posicao_primaria']
-            posicao.segunda = atleta_data['posicao_secundaria']
-            posicao.terceira = atleta_data['posicao_terciaria']
-            posicao.data_atualizado = data_atualizacao
+            new_posicao = OrderedDict(
+                [
+                    ('primeira', atleta_data.get('posicao_primaria')),
+                    ('segunda', atleta_data.get('posicao_secundaria')),
+                    ('terceira', atleta_data.get('posicao_terciaria')),
+                ]
+            )
+
+            for preferencia, posicao_id in new_posicao.items():
+                if posicao_id is not None:
+                    existing_posicao = session.exec(
+                        select(AtletaPosicao).filter_by(
+                            atleta_id=atleta_id, preferencia=preferencia
+                        )
+                    ).one()
+                    if existing_posicao:
+                        existing_posicao.posicao_id = posicao_id
 
             session.commit()
+
+        return True
 
     def save_blob_url(self, atleta_id: int, blob_url: str):
         with self.session_factory() as session:

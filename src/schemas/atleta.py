@@ -36,9 +36,9 @@ class Contrato(BaseModel):
 class AtletaCreateSchema(BaseModel):
     nome: str
     data_nascimento: str
-    posicao_primaria: str
-    posicao_secundaria: str | None
-    posicao_terciaria: str | None
+    posicao_primaria: int
+    posicao_secundaria: int
+    posicao_terciaria: int
 
     _validate_data_nascimento = field_validator('data_nascimento')(
         validate_date_format
@@ -48,21 +48,8 @@ class AtletaCreateSchema(BaseModel):
         'posicao_primaria', 'posicao_secundaria', 'posicao_terciaria'
     )
     def validate_posicao_id(cls, v):
-        allowed_positions = (
-            'goleiro',
-            'lateral direito',
-            'lateral esquerdo',
-            'zagueiro',
-            'volante',
-            'meia armador',
-            'meia atacante',
-            'atacante',
-            'centroavante',
-        )
-        if v and v not in allowed_positions:
-            raise ValueError(
-                f'Posição inválida: {v}. Posições permitidas: {allowed_positions}'
-            )
+        if v and v not in range(1, 11):
+            raise ValueError(f'ID de posição inválido: {v}.')
         return v
 
 
@@ -73,9 +60,9 @@ class AtletaCreateResponse(BaseModel):
 class AtletaUpdateSchema(BaseModel):
     nome: str
     data_nascimento: str
-    posicao_primaria: str
-    posicao_secundaria: str | None
-    posicao_terciaria: str | None
+    posicao_primaria: int
+    posicao_secundaria: int
+    posicao_terciaria: int
     ativo: bool
 
     _validate_data_nascimento = field_validator('data_nascimento')(
