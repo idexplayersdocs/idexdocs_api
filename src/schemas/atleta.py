@@ -36,9 +36,9 @@ class Contrato(BaseModel):
 class AtletaCreateSchema(BaseModel):
     nome: str
     data_nascimento: str
-    posicao_primaria: int
-    posicao_secundaria: int
-    posicao_terciaria: int
+    posicao_primaria: str
+    posicao_secundaria: str
+    posicao_terciaria: str
 
     _validate_data_nascimento = field_validator('data_nascimento')(
         validate_date_format
@@ -48,7 +48,7 @@ class AtletaCreateSchema(BaseModel):
         'posicao_primaria', 'posicao_secundaria', 'posicao_terciaria'
     )
     def validate_posicao_id(cls, v):
-        if v and v not in range(1, 11):
+        if v and int(v) not in range(1, 11):
             raise ValueError(f'ID de posição inválido: {v}.')
         return v
 

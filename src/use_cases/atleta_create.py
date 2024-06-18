@@ -32,9 +32,9 @@ class AtletaCreateUseCase:
         new_posicao = OrderedDict(
             [
                 ('atleta_id', atleta_data.get('id')),
-                ('primeira', atleta_data.get('posicao_primaria')),
-                ('segunda', atleta_data.get('posicao_secundaria')),
-                ('terceira', atleta_data.get('posicao_terciaria')),
+                ('primeira', int(atleta_data.get('posicao_primaria'))),
+                ('segunda', int(atleta_data.get('posicao_secundaria'))),
+                ('terceira', int(atleta_data.get('posicao_terciaria'))),
             ]
         )
 
