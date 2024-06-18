@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlmodel import func, select
+from sqlmodel import select
 
 from src.repository.model_objects import (
     CaracteristicaAtacante,
@@ -18,12 +18,15 @@ from .base_repo import create_session
 class CaracteristicasRepo:
     MODELS = {
         'fisico': CaracteristicaFisica,
-        'zagueiro': CaracteristicaZagueiro,
-        'lateral': CaracteristicaLateral,
-        'goleiro': CaracteristicaGoleiro,
-        'volante': CaracteristicaVolante,
-        'atacante': CaracteristicaAtacante,
-        'meia': CaracteristicaMeia,
+        '2': CaracteristicaGoleiro,
+        '3': CaracteristicaLateral,
+        '4': CaracteristicaLateral,
+        '5': CaracteristicaZagueiro,
+        '6': CaracteristicaVolante,
+        '7': CaracteristicaMeia,
+        '8': CaracteristicaMeia,
+        '9': CaracteristicaAtacante,
+        '10': CaracteristicaAtacante,
     }
 
     def __init__(self) -> None:

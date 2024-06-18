@@ -5,12 +5,15 @@ from src.schemas.caracteristica import *
 
 CARACTERISTICAS_SCHEMA = {
     'fisico': CaracteristicaFisicaCreateSchema,
-    'zagueiro': CaracteristicaZagueiroCreateSchema,
-    'lateral': CaracteristicaLateralCreateSchema,
-    'goleiro': CaracteristicaGoleiroCreateSchema,
-    'volante': CaracteristicaVolanteCreateSchema,
-    'atacante': CaracteristicaAtacanteCreateSchema,
-    'meia': CaracteristicaMeiaCreateSchema,
+    '2': CaracteristicaGoleiroCreateSchema,
+    '3': CaracteristicaLateralCreateSchema,
+    '4': CaracteristicaLateralCreateSchema,
+    '5': CaracteristicaZagueiroCreateSchema,
+    '6': CaracteristicaVolanteCreateSchema,
+    '7': CaracteristicaMeiaCreateSchema,
+    '8': CaracteristicaMeiaCreateSchema,
+    '9': CaracteristicaAtacanteCreateSchema,
+    '10': CaracteristicaAtacanteCreateSchema,
 }
 
 

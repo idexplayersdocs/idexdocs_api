@@ -68,7 +68,7 @@ class PdfCreateUseCase:
         permissoes = filters.get('permissoes', [])
         if 'create_desempenho' in permissoes:
             # Recuperando informações específicas da posição do atleta
-            filters.update({'model': atleta.get('posicao_primaria')})
+            filters.update({'model': str(atleta.get('posicao_primaria'))})
             http_request.query_params = filters
             caracteristicas_posicao = self.caracteristica_use_case.execute(http_request)
             del caracteristicas_posicao['type']
