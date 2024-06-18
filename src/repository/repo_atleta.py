@@ -292,7 +292,7 @@ class AtletaRepo:
                 raise
 
     def update_atleta(self, atleta_id: int, atleta_data: dict) -> dict:
-        with self.session_factory() as session:
+        with self.session_factory().no_autoflush as session:
             atleta: Atleta = session.exec(
                 select(Atleta).where(Atleta.id == atleta_id)
             ).one()
@@ -327,9 +327,9 @@ class AtletaRepo:
             # Faz a atualização de posições se existirem valores novos para atualizar
             new_posicao = OrderedDict(
                 [
-                    ('primeira', atleta_data.get('posicao_primaria')),
-                    ('segunda', atleta_data.get('posicao_secundaria')),
-                    ('terceira', atleta_data.get('posicao_terciaria')),
+                    ('primeira', int(atleta_data.get('posicao_primaria'))),
+                    ('segunda', int(atleta_data.get('posicao_secundaria'))),
+                    ('terceira', int(atleta_data.get('posicao_terciaria'))),
                 ]
             )
 
@@ -339,9 +339,18 @@ class AtletaRepo:
                         select(AtletaPosicao).filter_by(
                             atleta_id=atleta_id, preferencia=preferencia
                         )
-                    ).one()
+                    ).first()
                     if existing_posicao:
                         existing_posicao.posicao_id = posicao_id
+                        existing_posicao.data_atualizado = data_atualizacao
+                    else:
+                        new_posicao = AtletaPosicao(
+                            atleta_id=atleta_id,
+                            posicao_id=posicao_id,
+                            preferencia=preferencia,
+                            data_atualizado=data_atualizacao,
+                        )
+                        session.add(new_posicao)
 
             session.commit()
 
