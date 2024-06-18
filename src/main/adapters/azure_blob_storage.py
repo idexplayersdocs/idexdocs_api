@@ -1,3 +1,5 @@
+import os
+
 from azure.core.exceptions import ResourceNotFoundError
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
@@ -6,7 +8,7 @@ from azure.storage.blob import BlobServiceClient
 class AzureBlobStorage:
     # Use a class attribute for the BlobServiceClient if all instances share the same service client config
     _blob_service_client = None
-    account_url = 'https://idexdocsblob.blob.core.windows.net'
+    account_url = os.getenv('STORAGE_ACCOUNT')
 
     def __init__(self):
 
@@ -56,4 +58,3 @@ class AzureBlobStorage:
             blob_client.delete_blob()
         except Exception:
             raise
-
