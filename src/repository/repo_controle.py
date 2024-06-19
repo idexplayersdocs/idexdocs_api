@@ -58,3 +58,14 @@ class ControleRepo:
             session.commit()
             session.refresh(new_controle)
             return {'id': new_controle.id}
+
+    def delete_controle(self, controle_id: int):
+        with self.session_factory() as session:
+            controle: HistoricoControle = session.exec(
+                select(HistoricoControle).where(HistoricoControle.id == controle_id)
+            ).one()
+
+            session.delete(controle)
+            session.commit()
+
+            return {'id': controle.id}

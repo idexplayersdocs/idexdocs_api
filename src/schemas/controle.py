@@ -31,6 +31,10 @@ class ControleCreateResponse(BaseModel):
     id: int
 
 
+class ControleDeleteResponse(BaseModel):
+    id: int
+
+
 class ControleListResponse(BaseModel):
     count: int
     tupe: str

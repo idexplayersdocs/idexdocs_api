@@ -18,6 +18,7 @@ from src.main.rest.contrato_tipo_list import contrato_tipo_list
 from src.main.rest.contrato_update import contrato_update
 from src.main.rest.contrato_versao_list import contrato_versao_list
 from src.main.rest.controle_create import controle_create
+from src.main.rest.controle_delete import controle_delete
 from src.main.rest.controle_list import controle
 from src.main.rest.file_download import file_download
 from src.main.rest.file_upload import file_upload
@@ -67,6 +68,7 @@ from src.schemas.contrato import (
 from src.schemas.controle import (
     ControleCreateResponse,
     ControleCreateSchema,
+    ControleDeleteResponse,
     ControleListResponse,
 )
 from src.schemas.file_upload import FileUpdateSchema
@@ -789,18 +791,18 @@ router.add_api_route(
                             'type': 'Clubes',
                             'data': [
                                 {
-                                    "clube_id": 1,
-                                    "nome": "Novo clube 1",
-                                    "data_inicio": "2024-01-01",
-                                    "data_fim": "2024-06-01",
-                                    "clube_atual": False
+                                    'clube_id': 1,
+                                    'nome': 'Novo clube 1',
+                                    'data_inicio': '2024-01-01',
+                                    'data_fim': '2024-06-01',
+                                    'clube_atual': False,
                                 },
                                 {
-                                    "clube_id": 2,
-                                    "nome": "Clube antigo 1",
-                                    "data_inicio": "2023-01-01",
-                                    "data_fim": "2023-06-01",
-                                    "clube_atual": False
+                                    'clube_id': 2,
+                                    'nome': 'Clube antigo 1',
+                                    'data_inicio': '2023-01-01',
+                                    'data_fim': '2023-06-01',
+                                    'clube_atual': False,
                                 },
                             ],
                         }
@@ -950,6 +952,30 @@ router.add_api_route(
                         }
                     }
                 },
+            },
+        },
+    },
+)
+router.add_api_route(
+    '/delete/controle/{id}',
+    endpoint=controle_delete,
+    tags=['Controle'],
+    methods=['DELETE'],
+    response_model=ControleDeleteResponse,
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do controle',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Successful Response',
+                'content': {'application/json': {'example': {'id': 1}}},
             },
         },
     },
