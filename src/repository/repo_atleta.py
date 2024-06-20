@@ -132,7 +132,11 @@ class AtletaRepo:
                 )
                 .select_from(Atleta)
                 .outerjoin(
-                    HistoricoClube, Atleta.id == HistoricoClube.atleta_id
+                    HistoricoClube,
+                    and_(
+                        HistoricoClube.atleta_id == Atleta.id,
+                        HistoricoClube.clube_atual == 1,
+                    ),
                 )
                 .outerjoin(subquery, subquery.c.atleta_id == Atleta.id)
                 .outerjoin(
@@ -148,7 +152,6 @@ class AtletaRepo:
                 .outerjoin(
                     posicao_subquery, posicao_subquery.c.atleta_id == Atleta.id
                 )
-                .where(HistoricoClube.data_fim.is_(None))
                 .order_by(Atleta.id)
             )
 
