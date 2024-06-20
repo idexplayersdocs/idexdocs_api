@@ -11,7 +11,7 @@ class ControleRepo:
     def _create_controle_list_objects(self, result: list) -> dict:
         return [
             {
-                'atleta_id': atleta_id,
+                'controle_id': atleta_id,
                 'nome': nome,
                 'quantidade': quantidade,
                 'preco': preco,

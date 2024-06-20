@@ -897,35 +897,35 @@ router.add_api_route(
                             'data': {
                                 'controles': [
                                     {
-                                        'atleta_id': 1,
+                                        'controle_id': 1,
                                         'nome': 'Uniforme',
                                         'quantidade': 2,
                                         'preco': 50.0,
                                         'data_controle': '2024-01-01',
                                     },
                                     {
-                                        'atleta_id': 2,
+                                        'controle_id': 2,
                                         'nome': 'Uniforme',
                                         'quantidade': 2,
                                         'preco': 50.0,
                                         'data_controle': '2024-01-01',
                                     },
                                     {
-                                        'atleta_id': 3,
+                                        'controle_id': 3,
                                         'nome': 'Uniforme',
                                         'quantidade': 2,
                                         'preco': 50.0,
                                         'data_controle': '2024-01-01',
                                     },
                                     {
-                                        'atleta_id': 4,
+                                        'controle_id': 4,
                                         'nome': 'Uniforme',
                                         'quantidade': 2,
                                         'preco': 50.1,
                                         'data_controle': '2024-01-01',
                                     },
                                     {
-                                        'atleta_id': 5,
+                                        'controle_id': 5,
                                         'nome': 'Uniforme',
                                         'quantidade': 2,
                                         'preco': 50.75,
