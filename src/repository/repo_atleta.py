@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import pytz
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from sqlmodel import and_, func, select
+from sqlmodel import and_, func, select, update
 
 from .base_repo import create_session
 from .model_objects import (
@@ -338,22 +338,18 @@ class AtletaRepo:
 
             for preferencia, posicao_id in new_posicao.items():
                 if posicao_id is not None:
-                    existing_posicao = session.exec(
-                        select(AtletaPosicao).filter_by(
-                            atleta_id=atleta_id, preferencia=preferencia
+                    session.exec(
+                        update(AtletaPosicao)
+                        .where(
+                            AtletaPosicao.atleta_id == atleta_id,
+                            AtletaPosicao.preferencia == preferencia,
                         )
-                    ).first()
-                    if existing_posicao:
-                        existing_posicao.posicao_id = posicao_id
-                        existing_posicao.data_atualizado = data_atualizacao
-                    else:
-                        new_posicao = AtletaPosicao(
-                            atleta_id=atleta_id,
+                        .values(
                             posicao_id=posicao_id,
                             preferencia=preferencia,
                             data_atualizado=data_atualizacao,
                         )
-                        session.add(new_posicao)
+                    )
 
             session.commit()
 
