@@ -13,7 +13,7 @@ class AtletaUpdateController(ControllerInterface):
     def __init__(self, use_case: AtletaUpdateUseCase):
         self._use_case = use_case
 
-    def handle(self, http_request: HttpRequest) -> HttpResponse:
+    def handle(self, http_request: dict) -> HttpResponse:
         result: list = self._use_case.execute(http_request=http_request)
 
         return HttpResponse(body=result, status_code=HttpStatusCode.OK.value)

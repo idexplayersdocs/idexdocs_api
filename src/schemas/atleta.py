@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, field_validator
 
@@ -10,27 +10,6 @@ def validate_date_format(date_str: str) -> str:
             return date_str
         except ValueError:
             raise ValueError('Formato de data inválido, utilize YYYY-MM-DD')
-
-
-class Clube(BaseModel):
-    nome: str | None
-    data_inicio: str | None
-
-    _validate_data_inicio = field_validator('data_inicio')(
-        validate_date_format
-    )
-
-
-class Contrato(BaseModel):
-    contrato_sub_tipo_id: int | None
-    data_inicio: str | None
-    data_termino: str | None
-    observacao: str | None = None
-
-    _validate_data_inicio = field_validator('data_inicio')(
-        validate_date_format
-    )
-    _validate_data_fim = field_validator('data_termino')(validate_date_format)
 
 
 class AtletaCreateSchema(BaseModel):
@@ -56,6 +35,20 @@ class AtletaCreateSchema(BaseModel):
 class AtletaCreateResponse(BaseModel):
     id: int
 
+class AtletaBaseResponse(BaseModel):
+    id: int
+    nome: str
+    data_nascimento: str
+    posicao_primaria: str | None
+    clube_atual: str | None
+    data_proxima_avaliacao_relacionamento: date | None
+    ativo: bool
+
+class AtletaListResponse(BaseModel):
+    count: int
+    total: int
+    type: str
+    data: list[AtletaBaseResponse]
 
 class AtletaUpdateSchema(AtletaCreateSchema):
     ativo: bool

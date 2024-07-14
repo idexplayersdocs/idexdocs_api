@@ -20,13 +20,13 @@ markers = [
 extend-exclude = ['(migrations/)', '(src/use_cases/pdf_create.py)']
 
 [tool.taskipy.tasks]
+run = 'uvicorn asgi:app --reload'
+test = "pytest --cov=src/routers -vv"
+# pre_test = 'task lint'
+post_test = 'coverage html'
 lint = 'ruff check . && blue --check . --diff'
 format = 'blue . && isort .'
-type = 'mypy . --explicit-package-bases'
-run = 'uvicorn asgi:app --reload'
-pre_test = 'task lint'
-test = 'pytest -s -x --cov=src -vv'
-post_test = 'coverage html'
+type = 'mypy src --explicit-package-bases'
 
 [tool.commitizen]
 name = "cz_conventional_commits"

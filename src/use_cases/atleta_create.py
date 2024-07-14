@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from datetime import date, datetime
 
 from src.presentation.http_types.http_request import HttpRequest
 from src.repository.repo_atleta import AtletaRepo
@@ -25,6 +26,10 @@ class AtletaCreateUseCase:
         return new_atleta
 
     def _create_atleta(self, atleta_data: dict) -> dict:
+        date_obj: date = datetime.strptime(
+            atleta_data.get('data_nascimento'), '%Y-%m-%d'
+            )
+        atleta_data['data_nascimento'] = date_obj
         return self.atleta_repository.create_atleta(atleta_data)
 
     def _create_posicao(self, atleta_data: dict):

@@ -3,6 +3,7 @@ uvicorn[standard]
 gunicorn
 sqlmodel
 pydantic
+pydantic-settings
 alembic
 pyodbc
 azure-storage-blob

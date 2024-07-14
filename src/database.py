@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 from sqlmodel import Session, create_engine
 
 from src.settings import Settings
@@ -16,3 +18,5 @@ engine = create_engine(connection_string)
 def get_session():
     with Session(engine, expire_on_commit=True) as session:
         yield session
+
+session_context = contextmanager(get_session)

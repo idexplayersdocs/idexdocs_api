@@ -1,20 +1,14 @@
 from src.error.types.credentials_exception import CredentialsException
 from src.error.types.http_not_found import NotFoundError
-from src.presentation.http_types.http_request import HttpRequest
 from src.repository.repo_atleta import AtletaRepo
-from src.security.security import get_current_user
 
 
 class AtletaListUseCase:
     def __init__(self, repository: AtletaRepo):
         self.repository = repository
 
-    def execute(self, http_request: HttpRequest):
-        filters: dict = dict(http_request.query_params.items())
-        authorization: str = http_request.headers.get('authorization')
-
-        token = self._extract_token(authorization)
-        get_current_user(token)
+    def execute(self, http_request: dict):
+        filters: dict = http_request.copy()
 
         total_count, result = self._list_atletas(filters)
         return self._format_response(total_count, result)

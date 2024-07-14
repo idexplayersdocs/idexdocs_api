@@ -5,9 +5,10 @@ from src.repository.repo_atleta import AtletaRepo
 from src.use_cases.atleta_list import AtletaListUseCase
 
 
-def atleta_list_composer():
-    repository = AtletaRepo()
+def atleta_list_composer(filters: dict, session):
+    repository = AtletaRepo(session)
     use_case = AtletaListUseCase(repository=repository)
+
     controller = AtletaListController(use_case=use_case)
 
-    return controller.handle
+    return controller.handle(filters)

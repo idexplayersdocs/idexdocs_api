@@ -9,3 +9,4 @@ pyyaml
 pylint
 freezegun
 httpx
+factory-boy

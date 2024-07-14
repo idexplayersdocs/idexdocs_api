@@ -6,7 +6,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from sqlmodel import and_, func, select, update
 
-from .base_repo import create_session
 from .model_objects import (
     Atleta,
     AtletaAvatar,
@@ -15,6 +14,7 @@ from .model_objects import (
     HistoricoClube,
     Posicao,
     Relacionamento,
+    datetime_now_sec,
 )
 
 AtletaDetails = namedtuple(
@@ -48,8 +48,8 @@ ContratoDetails = namedtuple(
 
 
 class AtletaRepo:
-    def __init__(self) -> None:
-        self.session_factory = create_session
+    def __init__(self, session) -> None:
+        self.session_factory = session
 
     def _create_atleta_list_objects(self, result: list) -> dict:
         return [
@@ -101,7 +101,7 @@ class AtletaRepo:
         }
 
     def list_atleta(self, filters: dict):
-        with self.session_factory() as session:
+        with self.session_factory as session:
             subquery = (
                 select(
                     Relacionamento.atleta_id,
@@ -164,8 +164,9 @@ class AtletaRepo:
             ).one()
 
             # aplica paginação
-            page = int(filters.get('page', 1))
-            per_page = int(filters.get('per_page', 10))
+            page = int(filters.get('page'))
+            per_page = int(filters.get('per_page'))
+        
             query = (
                 query.order_by(Atleta.nome)
                 .limit(per_page)
@@ -180,7 +181,7 @@ class AtletaRepo:
             )
 
     def get_atleta_by_id(self, atleta_id: int):
-        with self.session_factory() as session:
+        with self.session_factory as session:
             query = select(Atleta).where(Atleta.id == atleta_id)
 
         try:
@@ -280,7 +281,7 @@ class AtletaRepo:
             raise
 
     def create_atleta(self, atleta_data: dict) -> dict:
-        with self.session_factory() as session:
+        with self.session_factory as session:
             try:
                 # Criando uma instância de atleta
                 new_atleta = Atleta(**atleta_data)
@@ -295,15 +296,10 @@ class AtletaRepo:
                 raise
 
     def update_atleta(self, atleta_id: int, atleta_data: dict) -> dict:
-        with self.session_factory().no_autoflush as session:
+        with self.session_factory.no_autoflush as session:
             atleta: Atleta = session.exec(
                 select(Atleta).where(Atleta.id == atleta_id)
             ).one()
-
-            # Configurando horário da atualização
-            data_atualizacao = datetime.strftime(
-                datetime.now(), '%Y-%m-%d %H:%M:%S'
-            )
 
             # Preparando os campos de atleta para atualização
             atleta_update_fields = {
@@ -312,7 +308,7 @@ class AtletaRepo:
                     'data_nascimento', atleta.data_nascimento
                 ),
                 'ativo': atleta_data.get('ativo', atleta.ativo),
-                'data_atualizado': data_atualizacao,
+                'data_atualizado': datetime_now_sec(),
             }
 
             # Apenas inclue campos que são novos para atualizar
@@ -347,13 +343,13 @@ class AtletaRepo:
                         .values(
                             posicao_id=posicao_id,
                             preferencia=preferencia,
-                            data_atualizado=data_atualizacao,
+                            data_atualizado=datetime_now_sec(),
                         )
                     )
 
             session.commit()
 
-        return True
+        return {'id': atleta_id}
 
     def save_blob_url(self, atleta_id: int, blob_url: str):
         with self.session_factory() as session:
