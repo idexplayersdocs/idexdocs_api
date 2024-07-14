@@ -15,7 +15,7 @@ class AtletaCreateUseCase:
         self.posicao_repository = posicao_repository
 
     def execute(self, http_request: HttpRequest):
-        atleta_data: dict = http_request.json
+        atleta_data: dict = http_request
 
         new_atleta: dict = self._create_atleta(atleta_data)
         atleta_data.update(new_atleta)

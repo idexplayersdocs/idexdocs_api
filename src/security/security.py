@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 
 import pytz
@@ -17,8 +16,9 @@ from src.repository.model_objects import (
     UsuarioRole,
 )
 from src.repository.repo_usuario import UsuarioRepo
+from src.settings import Settings
 
-SECRET_KEY = os.environ['TOKEN_KEY']
+SECRET_KEY = Settings().TOKEN_KEY
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 180
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')

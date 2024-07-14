@@ -9,7 +9,7 @@ from src.presentation.interfaces.controller_interface import (
 from src.use_cases.atleta_create import AtletaCreateUseCase
 
 
-class AtletaCreateController(ControllerInterface):
+class CreateController(ControllerInterface):
     def __init__(self, use_case: AtletaCreateUseCase):
         self._use_case = use_case
 

@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 
-from src.main.rest.atleta_create import atleta_create
 from src.main.rest.atleta_detail import atleta_detail
 from src.main.rest.atleta_list import atleta
 from src.main.rest.atleta_update import atleta_update
@@ -208,77 +207,7 @@ router.add_api_route(
         },
     },
 )
-router.add_api_route(
-    '/create/atleta',
-    endpoint=atleta_create,
-    tags=['Atleta'],
-    methods=['POST'],
-    response_model=AtletaCreateResponse,
-    openapi_extra={
-        'requestBody': {
-            'content': {
-                'application/json': {
-                    'schema': AtletaCreateSchema.model_json_schema(),
-                    'examples': {
-                        'example1': {
-                            'summary': 'Exemplo de payload para criação de atleta completo',
-                            'value': {
-                                'nome': 'Igor',
-                                'data_nascimento': '1985-03-11',
-                                'clube': {
-                                    'nome': 'SIGA SPORTS',
-                                    'data_inicio': '2024-05-01',
-                                },
-                                'contrato_clube': {
-                                    'contrato_sub_tipo_id': 1,
-                                    'data_inicio': '2024-05-01',
-                                    'data_termino': '2025-05-01',
-                                    'observacao': 'null',
-                                },
-                                'contrato_empresa': {
-                                    'contrato_sub_tipo_id': 2,
-                                    'data_inicio': '2024-05-01',
-                                    'data_termino': '2025-05-01',
-                                    'observacao': 'null',
-                                },
-                                'posicao_primaria': 'atacante',
-                                'posicao_secundaria': 'null',
-                                'posicao_terciaria': 'null',
-                            },
-                        },
-                        'example2': {
-                            'summary': 'Exemplo de payload para criação de atleta parcial',
-                            'value': {
-                                'nome': 'Atleta completo',
-                                'data_nascimento': '1985-03-11',
-                                'clube': {
-                                    'nome': 'null',
-                                    'data_inicio': 'null',
-                                },
-                                'contrato_clube': {
-                                    'contrato_sub_tipo_id': 'null',
-                                    'data_inicio': 'null',
-                                    'data_termino': 'null',
-                                    'observacao': 'null',
-                                },
-                                'contrato_empresa': {
-                                    'contrato_sub_tipo_id': 'null',
-                                    'data_inicio': 'null',
-                                    'data_termino': 'null',
-                                    'observacao': 'null',
-                                },
-                                'posicao_primaria': 'atacante',
-                                'posicao_secundaria': 'null',
-                                'posicao_terciaria': 'null',
-                            },
-                        },
-                    },
-                }
-            },
-            'required': True,
-        },
-    },
-)
+
 router.add_api_route(
     '/update/atleta/{id}',
     endpoint=atleta_update,

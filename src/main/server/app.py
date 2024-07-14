@@ -3,6 +3,8 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.routers import atletas
+
 from .. import init_app
 
 APPLICATION_CONFIG = os.getenv('APPLICATION_CONFIG', 'local')
@@ -34,6 +36,7 @@ def create_app():
         Object: fastapi.FastAPI: The configured FastAPI application instance.
     """
     app = FastAPI()
+    app.include_router(atletas.router)
 
     app.add_middleware(
         CORSMiddleware,
