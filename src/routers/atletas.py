@@ -37,12 +37,13 @@ def create_atleta(
 def list_atleta(
     session: T_Session,
     # current_user: T_CurrentUser,
+    atleta: str,
     page: int = 1,
     per_page: int = 10,
 ):
 
     return atleta_list_composer(
-        {'page': page, 'per_page': per_page}, session
+        {'atleta': atleta,'page': page, 'per_page': per_page}, session
     ).body
 
 
