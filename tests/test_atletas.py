@@ -1,9 +1,4 @@
-from datetime import datetime
 from http import HTTPStatus
-
-
-def str_to_date(date_str: str) -> str:
-    return datetime.strptime(date_str, '%Y-%m-%d')
 
 
 def test_create_atleta(client):

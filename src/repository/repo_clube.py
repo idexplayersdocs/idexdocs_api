@@ -3,12 +3,10 @@ from sqlmodel import func, select, update
 
 from src.repository.model_objects import HistoricoClube, datetime_now_sec
 
-from .base_repo import create_session
-
 
 class ClubeRepo:
-    def __init__(self) -> None:
-        self.session_factory = create_session
+    def __init__(self, session) -> None:
+        self.session_factory = session
 
     def _create_clube_objects(self, result: list) -> list[dict]:
         clube_list = [
@@ -27,7 +25,7 @@ class ClubeRepo:
         return clube_list
 
     def list_clube(self, atleta_id: int, filters: dict = {}):
-        with self.session_factory() as session:
+        with self.session_factory as session:
             query = select(
                 HistoricoClube.id,
                 HistoricoClube.nome,
@@ -56,7 +54,7 @@ class ClubeRepo:
             return total_count, self._create_clube_objects(paginated_results)
 
     def create_clube(self, clube_data: dict) -> dict:
-        with self.session_factory() as session:
+        with self.session_factory as session:
             new_clube = HistoricoClube(**clube_data)
             session.add(new_clube)
             session.commit()

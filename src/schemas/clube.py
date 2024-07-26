@@ -21,7 +21,7 @@ class ClubeBaseSchema(BaseModel):
                 )
 
 
-class ClubeCreateSchema(BaseModel):
+class ClubeCreateSchema(ClubeBaseSchema):
     atleta_id: int = Field(..., gt=0)
 
 

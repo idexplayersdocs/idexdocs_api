@@ -13,9 +13,9 @@ class ClubeListUseCase:
         self.clube_repository = clube_repository
         self.atleta_repository = atleta_repository
 
-    def execute(self, http_request: HttpRequest):
-        atleta_id: int = int(http_request.path_params.get('id'))
-        filters: dict = dict(http_request.query_params.items())
+    def execute(self, http_request: dict):
+        atleta_id: int = http_request.pop('atleta_id')
+        filters: dict = http_request
 
         self._check_atleta_exists(atleta_id)
 

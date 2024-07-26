@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.routers import atletas
+from src.routers import atletas, clubes
 
 from .. import init_app
 
@@ -37,6 +37,7 @@ def create_app():
     """
     app = FastAPI()
     app.include_router(atletas.router)
+    app.include_router(clubes.router)
 
     app.add_middleware(
         CORSMiddleware,

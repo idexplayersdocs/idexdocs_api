@@ -37,7 +37,7 @@ def create_atleta(
 def list_atleta(
     session: T_Session,
     # current_user: T_CurrentUser,
-    atleta: str,
+    atleta: str = None,
     page: int = 1,
     per_page: int = 10,
 ):

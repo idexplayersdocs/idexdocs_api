@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from src.main.rest.atleta_detail import atleta_detail
 from src.main.rest.caracteristica_create import caracteristica_create
 from src.main.rest.caracteristica_list import caracteristica
-from src.main.rest.clube_create import clube_create
 from src.main.rest.clube_list import clube
 from src.main.rest.clube_update import clube_update
 from src.main.rest.competicao_create import competicao_create
@@ -782,35 +781,7 @@ router.add_api_route(
         },
     },
 )
-router.add_api_route(
-    '/create/clube',
-    endpoint=clube_create,
-    tags=['Clube'],
-    methods=['POST'],
-    response_model=ClubeCreateResponse,
-    openapi_extra={
-        'requestBody': {
-            'content': {
-                'application/json': {
-                    'schema': ClubeCreateSchema.model_json_schema(),
-                    'examples': {
-                        'example1': {
-                            'summary': 'Exemplo de payload para edição de clube',
-                            'value': {
-                                'clube_id': 1,
-                                'nome': 'Outro clube novo',
-                                'data_inicio': '2024-01-01',
-                                'clube_atual': True,
-                                'data_fim': '2020-01-01',
-                            },
-                        },
-                    },
-                }
-            },
-            'required': True,
-        },
-    },
-)
+
 router.add_api_route(
     '/update/clube',
     endpoint=clube_update,

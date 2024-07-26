@@ -1,6 +1,7 @@
+from datetime import date, datetime
+
 from src.error.types.clube_ativo import ClubeAtivoExistente
 from src.error.types.http_not_found import NotFoundError
-from src.presentation.http_types.http_request import HttpRequest
 from src.repository.repo_atleta import AtletaRepo
 from src.repository.repo_clube import ClubeRepo
 
@@ -14,8 +15,8 @@ class ClubeCreateUseCase:
         self.clube_repository = clube_repository
         self.atleta_repository = atleta_repository
 
-    def execute(self, http_request: HttpRequest):
-        clube_data: dict = dict(http_request.json)
+    def execute(self, http_request: dict):
+        clube_data: dict = http_request.copy()
         atleta_id: int = clube_data.get('atleta_id')
         clube_atual: bool = clube_data.get('clube_atual')
 
@@ -41,4 +42,7 @@ class ClubeCreateUseCase:
                 )
 
     def _create_clube(self, clube_data: dict):
+        for date_key in ['data_inicio', 'data_fim']:
+            clube_data[date_key] = datetime.strptime(clube_data.get(date_key), '%Y-%m-%d')
+
         return self.clube_repository.create_clube(clube_data)

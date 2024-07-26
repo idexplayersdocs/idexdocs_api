@@ -6,9 +6,9 @@ from src.repository.repo_clube import ClubeRepo
 from src.use_cases.clube_create import ClubeCreateUseCase
 
 
-def clube_create_composer():
-    clube_repository = ClubeRepo()
-    atleta_repository = AtletaRepo()
+def clube_create_composer(data: dict, session):
+    clube_repository = ClubeRepo(session)
+    atleta_repository = AtletaRepo(session)
 
     use_case = ClubeCreateUseCase(
         clube_repository=clube_repository,
@@ -16,4 +16,4 @@ def clube_create_composer():
     )
     controller = ControleCreateController(use_case=use_case)
 
-    return controller.handle
+    return controller.handle(data)
