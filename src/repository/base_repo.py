@@ -1,7 +1,9 @@
 import os
 
+import pyodbc
 from sqlmodel import Session, SQLModel, create_engine
 
+pyodbc.pooling = False
 
 class BaseSQL:
     """Postgres repository"""
@@ -14,7 +16,7 @@ class BaseSQL:
             os.environ['APPLICATION_DB'],
         )
 
-        self.engine = create_engine(self._connection_string)
+        self.engine = create_engine(self._connection_string, pool_recycle=3600)
         SQLModel.metadata.create_all(self.engine)
 
 
