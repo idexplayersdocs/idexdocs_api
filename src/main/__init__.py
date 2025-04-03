@@ -2167,6 +2167,32 @@ router.add_api_route(
                                     '2024-02-01': 3.0,
                                 },
                             },
+                            'imagens': [
+                                {
+                                    'id': 1,
+                                    'blob_url': 'string',
+                                    'descricao': 'string',
+                                },
+                                {
+                                    'id': 2,
+                                    'blob_url': 'string',
+                                    'descricao': 'string',
+                                },
+                            ],
+                            'videos': [
+                                {
+                                    'id': 1,
+                                    'blob_url': 'string',
+                                    'tipo': 'video',
+                                    'descricao': 'string',
+                                },
+                                {
+                                    'id': 2,
+                                    'blob_url': 'string',
+                                    'tipo': 'youtube',
+                                    'descricao': 'null',
+                                },
+                            ],
                         }
                     }
                 },

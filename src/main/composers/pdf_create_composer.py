@@ -1,4 +1,5 @@
 from src.presentation.controllers.pdf_create import PdfCreateController
+from src.repository.repo_arquivos import ArquivoRepo
 from src.repository.repo_atleta import AtletaRepo
 from src.repository.repo_caracteristicas import CaracteristicasRepo
 from src.repository.repo_clube import ClubeRepo
@@ -7,6 +8,7 @@ from src.repository.repo_controle import ControleRepo
 from src.repository.repo_lesao import LesaoRepo
 from src.repository.repo_observacao import ObservacaoRepo
 from src.repository.repo_relacionamento import RelacionamentoRepo
+from src.repository.repo_videos import VideoRepo
 from src.use_cases.caracteristica_list import CaracteristicaListUseCase
 from src.use_cases.pdf_create import PdfCreateUseCase
 
@@ -21,6 +23,8 @@ def pdf_create_composer():
     relacionamento_repository = RelacionamentoRepo()
     caracteristica_repository = CaracteristicasRepo()
     caracteristica_repository = CaracteristicasRepo()
+    arquivo_repository = ArquivoRepo()
+    video_repository = VideoRepo()
 
     caracteristica_use_case = CaracteristicaListUseCase(
         atleta_repository=atleta_repository,
@@ -37,6 +41,8 @@ def pdf_create_composer():
         caracteristica_use_case=caracteristica_use_case,
         caracteristica_repository=caracteristica_repository,
         relacionamento_repository=relacionamento_repository,
+        arquivo_repository=arquivo_repository,
+        video_repository=video_repository
     )
     controller = PdfCreateController(use_case=use_case)
 

@@ -1,5 +1,6 @@
 from src.error.types.http_not_found import NotFoundError
 from src.presentation.http_types.http_request import HttpRequest
+from src.repository.repo_arquivos import ArquivoRepo
 from src.repository.repo_atleta import AtletaRepo
 from src.repository.repo_caracteristicas import CaracteristicasRepo
 from src.repository.repo_clube import ClubeRepo
@@ -8,6 +9,7 @@ from src.repository.repo_controle import ControleRepo
 from src.repository.repo_lesao import LesaoRepo
 from src.repository.repo_observacao import ObservacaoRepo
 from src.repository.repo_relacionamento import RelacionamentoRepo
+from src.repository.repo_videos import VideoRepo
 from src.use_cases.caracteristica_list import CaracteristicaListUseCase
 
 
@@ -24,6 +26,8 @@ class PdfCreateUseCase:
         caracteristica_repository: CaracteristicasRepo,
         caracteristica_use_case: CaracteristicaListUseCase,
         relacionamento_repository: RelacionamentoRepo,
+        arquivo_repository: ArquivoRepo,
+        video_repository: VideoRepo
     ) -> None:
         self.clube_repository = clube_repository
         self.lesao_repository = lesao_repository
@@ -34,6 +38,8 @@ class PdfCreateUseCase:
         self.caracteristica_use_case = caracteristica_use_case
         self.relacionamento_repository = relacionamento_repository
         self.caracteristica_repository = caracteristica_repository
+        self.arquivo_repository = arquivo_repository
+        self.video_repository = video_repository
 
     def execute(self, http_request: HttpRequest):
         atleta_id: int = int(http_request.path_params.get('id'))
@@ -51,6 +57,8 @@ class PdfCreateUseCase:
         caracteristicas_fisicas, _ = self.caracteristica_repository.list_caracteristica(atleta_id, filters)
         observacoes_desempenho = self.observacao_repository.list_observacao(atleta_id, filters={'tipo': 'desempenho'})
         observacoes_relacionamento = self.observacao_repository.list_observacao(atleta_id, filters={'tipo': 'relacionamento'})
+        _, arquivos_img = self.arquivo_repository.get_imagens_urls(atleta_id)
+        _, videos = self.video_repository.get_videos_urls(atleta_id)
 
         # Dicionário com dados iniciais
         data = {
@@ -62,6 +70,8 @@ class PdfCreateUseCase:
             'observacoes_relacionamento': observacoes_relacionamento,
             'observacoes_desempenho': observacoes_desempenho,
             'caracteristicas_fisicas': caracteristicas_fisicas,
+            'imagens': arquivos_img,
+            'videos': videos,
         }
 
         # Gerenciando permissões para disponibilizar informações sensíveis
