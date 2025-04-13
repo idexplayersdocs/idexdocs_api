@@ -48,7 +48,8 @@ class AtletaCreateSchema(BaseModel):
         'posicao_primaria', 'posicao_secundaria', 'posicao_terciaria'
     )
     def validate_posicao_id(cls, v):
-        if v and int(v) not in range(1, 11):
+        # Existem 12 posições, mas adiciona-se 1 pois o range max é não inclusivo.
+        if v and int(v) not in range(1, 12 + 1):
             raise ValueError(f'ID de posição inválido: {v}.')
         return v
 

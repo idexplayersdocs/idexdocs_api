@@ -14,6 +14,8 @@ CARACTERISTICAS_SCHEMA = {
     '8': CaracteristicaMeiaCreateSchema,
     '9': CaracteristicaAtacanteCreateSchema,
     '10': CaracteristicaAtacanteCreateSchema,
+    '11': CaracteristicaLateralCreateSchema,
+    '12': CaracteristicaLateralCreateSchema,
 }
 
 
