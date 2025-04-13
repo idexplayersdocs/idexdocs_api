@@ -27,6 +27,8 @@ class CaracteristicasRepo:
         '8': CaracteristicaMeia,
         '9': CaracteristicaAtacante,
         '10': CaracteristicaAtacante,
+        '11': CaracteristicaLateral,
+        '12': CaracteristicaLateral,
     }
 
     def __init__(self) -> None:
