@@ -7,6 +7,7 @@ from src.repository.repo_clube import ClubeRepo
 from src.repository.repo_competicao import CompeticaoRepo
 from src.repository.repo_controle import ControleRepo
 from src.repository.repo_lesao import LesaoRepo
+from src.repository.repo_links import LinkRepo
 from src.repository.repo_observacao import ObservacaoRepo
 from src.repository.repo_relacionamento import RelacionamentoRepo
 from src.repository.repo_videos import VideoRepo
@@ -27,7 +28,8 @@ class PdfCreateUseCase:
         caracteristica_use_case: CaracteristicaListUseCase,
         relacionamento_repository: RelacionamentoRepo,
         arquivo_repository: ArquivoRepo,
-        video_repository: VideoRepo
+        video_repository: VideoRepo,
+        link_repository: LinkRepo,
     ) -> None:
         self.clube_repository = clube_repository
         self.lesao_repository = lesao_repository
@@ -40,6 +42,7 @@ class PdfCreateUseCase:
         self.caracteristica_repository = caracteristica_repository
         self.arquivo_repository = arquivo_repository
         self.video_repository = video_repository
+        self.link_repository = link_repository
 
     def execute(self, http_request: HttpRequest):
         atleta_id: int = int(http_request.path_params.get('id'))
@@ -59,6 +62,7 @@ class PdfCreateUseCase:
         observacoes_relacionamento = self.observacao_repository.list_observacao(atleta_id, filters={'tipo': 'relacionamento'})
         _, arquivos_img = self.arquivo_repository.get_imagens_urls(atleta_id)
         _, videos = self.video_repository.get_videos_urls(atleta_id)
+        _, links = self.link_repository.get_links(atleta_id)
 
         # Dicionário com dados iniciais
         data = {
@@ -72,6 +76,7 @@ class PdfCreateUseCase:
             'caracteristicas_fisicas': caracteristicas_fisicas,
             'imagens': arquivos_img,
             'videos': videos,
+            'links': links,
         }
 
         # Gerenciando permissões para disponibilizar informações sensíveis

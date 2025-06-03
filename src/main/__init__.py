@@ -29,6 +29,9 @@ from src.main.rest.files_upload import multiple_files_upload
 from src.main.rest.lesao_create import lesao_create
 from src.main.rest.lesao_list import lesao
 from src.main.rest.lesao_update import lesao_update
+from src.main.rest.link_create import link_create
+from src.main.rest.link_delete import link_delete
+from src.main.rest.link_list import link_list
 from src.main.rest.observacao_create import observacao_create
 from src.main.rest.observacao_list import observacao
 from src.main.rest.pdf_create import pdf_create
@@ -77,6 +80,7 @@ from src.schemas.lesao import (
     LesaoCreateSchema,
     LesaoUpdateSchema,
 )
+from src.schemas.link import LinkCreateSchema, LinkResponseSchema
 from src.schemas.observacao import (
     ObservacaoCreateResponse,
     ObservacaoCreateSchema,
@@ -2484,6 +2488,70 @@ router.add_api_route(
                 },
             },
         },
+    },
+)
+
+router.add_api_route(
+    '/create/link',
+    endpoint=link_create,
+    tags=['Link'],
+    methods=['POST'],
+    response_model=LinkResponseSchema,
+    openapi_extra={
+        'requestBody': {
+            'content': {
+                'application/json': {
+                    'schema': LinkCreateSchema.model_json_schema(),
+                    'examples': {
+                        'example1': {
+                            'summary': 'Exemplo de payload para criação de link',
+                            'value': {
+                                'atleta_id': 1,
+                                'url': 'http://link.com.br',
+                                'descricao': 'Decrição do link',
+                            },
+                        }
+                    },
+                }
+            },
+            'required': True,
+        },
+    },
+)
+router.add_api_route(
+    '/link/atleta/{id}',
+    endpoint=link_list,
+    tags=['Link'],
+    methods=['GET'],
+    response_model=LesaoCreateResponse,
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do link',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
+    },
+)
+router.add_api_route(
+    '/delete/link/{id}',
+    endpoint=link_delete,
+    tags=['Link'],
+    methods=['DELETE'],
+    response_model=LinkResponseSchema,
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do link',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
     },
 )
 

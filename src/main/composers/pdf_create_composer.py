@@ -6,6 +6,7 @@ from src.repository.repo_clube import ClubeRepo
 from src.repository.repo_competicao import CompeticaoRepo
 from src.repository.repo_controle import ControleRepo
 from src.repository.repo_lesao import LesaoRepo
+from src.repository.repo_links import LinkRepo
 from src.repository.repo_observacao import ObservacaoRepo
 from src.repository.repo_relacionamento import RelacionamentoRepo
 from src.repository.repo_videos import VideoRepo
@@ -25,6 +26,7 @@ def pdf_create_composer():
     caracteristica_repository = CaracteristicasRepo()
     arquivo_repository = ArquivoRepo()
     video_repository = VideoRepo()
+    link_repository = LinkRepo()
 
     caracteristica_use_case = CaracteristicaListUseCase(
         atleta_repository=atleta_repository,
@@ -42,7 +44,8 @@ def pdf_create_composer():
         caracteristica_repository=caracteristica_repository,
         relacionamento_repository=relacionamento_repository,
         arquivo_repository=arquivo_repository,
-        video_repository=video_repository
+        video_repository=video_repository,
+        link_repository=link_repository,
     )
     controller = PdfCreateController(use_case=use_case)
 

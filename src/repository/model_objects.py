@@ -163,6 +163,17 @@ class AtletaImagens(SQLModel, table=True):
     atleta_id: int = Field(default=None, foreign_key='atleta.id')
 
 
+class AtletaLink(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    url: str
+    descricao: str | None = None
+    data_criacao: datetime = Field(
+        default_factory=datetime_now_sec, nullable=False
+    )
+    data_atualizado: datetime | None = None
+    atleta_id: int = Field(default=None, foreign_key='atleta.id')
+
+
 class AtletaVideoTypes(enum.Enum):
     video = 'video'
     youtube = 'youtube'
