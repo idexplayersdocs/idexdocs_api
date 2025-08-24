@@ -1,3 +1,6 @@
+from typing import Any
+
+from sqlalchemy.orm.exc import NoResultFound
 from sqlmodel import func, select
 
 from .base_repo import create_session
@@ -8,7 +11,7 @@ class ControleRepo:
     def __init__(self) -> None:
         self.session_factory = create_session
 
-    def _create_controle_list_objects(self, result: list) -> dict:
+    def _create_controle_list_objects(self, result: list) -> list[dict[str, Any]]:
         return [
             {
                 'controle_id': atleta_id,
@@ -58,6 +61,19 @@ class ControleRepo:
             session.commit()
             session.refresh(new_controle)
             return {'id': new_controle.id}
+
+    def get_by_id(self, controle_id: int) -> HistoricoControle | None:
+        with self.session_factory() as session:
+            query = select(HistoricoControle).where(
+                HistoricoControle.id == controle_id
+            )
+
+            try:
+                result = session.exec(query).one()
+                return result
+            except NoResultFound:
+                return None
+
 
     def delete_controle(self, controle_id: int):
         with self.session_factory() as session:

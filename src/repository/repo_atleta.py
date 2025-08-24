@@ -355,33 +355,82 @@ class AtletaRepo:
 
         return True
 
-    def save_blob_url(self, atleta_id: int, blob_url: str):
+    def save_blob_url(self, _id: int, uri: str, tipo: str = ''):
         with self.session_factory() as session:
-            user_avatar = session.exec(
-                select(AtletaAvatar).filter_by(atleta_id=atleta_id)
-            ).first()
 
-            if user_avatar:
-                user_avatar.blob_url = blob_url
-                user_avatar.data_atualizado = datetime.now(
+            base_query = select(AtletaAvatar)
+
+            tipo_mapping = {
+                'atleta': AtletaAvatar.atleta_id,
+                'recibo': AtletaAvatar.controle_id,
+                'contrato': AtletaAvatar.contrato_id,
+            }
+
+            # Construct the query with a default value in case of invalid 'tipo'
+            attribute = tipo_mapping.get(tipo, AtletaAvatar.atleta_id)
+            query = base_query.where(attribute == _id)
+
+            file = session.exec(query).first()
+
+            # Update
+            if file:
+                file.blob_url = uri
+                file.tipo = tipo
+                file.data_atualizado = datetime.now(
                     pytz.timezone('America/Sao_Paulo')
                 )
+            # Create
             else:
-                user_avatar = AtletaAvatar(
-                    blob_url=blob_url, atleta_id=atleta_id
-                )
-                session.add(user_avatar)
+                if tipo == 'atleta':
+                    new_file = AtletaAvatar(
+                        blob_url=uri, atleta_id=_id, tipo=tipo
+                    )
+                elif tipo == 'recibo':
+                    new_file = AtletaAvatar(
+                        blob_url=uri, controle_id=_id, tipo=tipo
+                    )
+                elif tipo == 'contrato':
+                    new_file = AtletaAvatar(
+                        blob_url=uri, contrato_id=_id, tipo=tipo
+                    )
+                else:
+                    new_file = AtletaAvatar(
+                        blob_url=uri, atleta_id=_id, tipo=tipo
+                    )
+                session.add(new_file)
 
             session.commit()
 
-    def get_blob_url(self, atleta_id: int):
+    def get_blob_url(self, _id: int, tipo: str = ''):
         with self.session_factory() as session:
-            query = select(AtletaAvatar).where(
-                AtletaAvatar.atleta_id == atleta_id
-            )
+            base_query = select(AtletaAvatar)
+
+            tipo_mapping = {
+                'atleta': AtletaAvatar.atleta_id,
+                'recibo': AtletaAvatar.controle_id,
+                'contrato': AtletaAvatar.contrato_id,
+            }
+
+            # Construct the query with a default value in case of invalid 'tipo'
+            attribute = tipo_mapping.get(tipo, AtletaAvatar.atleta_id)
+            query = base_query.where(attribute == _id)
 
         try:
             result = session.exec(query).one()
             return result.blob_url
         except NoResultFound:
             return None
+
+    def get_blob_by_id(self, _id: int) -> None:
+        with self.session_factory() as session:
+            query = select(AtletaAvatar).where(AtletaAvatar.id == _id)
+            return session.exec(query).first()
+
+    def delete_blob_url(self, _id: int):
+        with self.session_factory() as session:
+            query = select(AtletaAvatar).where(AtletaAvatar.id == _id)
+            file = session.exec(query).first()
+
+            if file:
+                session.delete(file)
+                session.commit()

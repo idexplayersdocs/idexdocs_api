@@ -229,3 +229,15 @@ class ContratoRepo:
             return result
         except NoResultFound:
             return None
+
+    def get_by_id(self, contrato_id: int) -> Contrato | None:
+        with self.session_factory() as session:
+            query = select(Contrato).where(
+                Contrato.id == contrato_id
+            )
+
+            try:
+                result = session.exec(query).one()
+                return result
+            except NoResultFound:
+                return None

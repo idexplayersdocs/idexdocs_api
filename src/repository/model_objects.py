@@ -1,5 +1,6 @@
 import enum
 from datetime import date, datetime
+from typing import Optional
 
 import pytz
 from sqlmodel import Column, Enum, Field, Relationship, SQLModel, String
@@ -143,12 +144,24 @@ class Atleta(SQLModel, table=True):
 class AtletaAvatar(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     blob_url: str
+    tipo: str | None = None
+    descricao: str | None = None
     data_criacao: datetime = Field(
         default_factory=datetime_now_sec, nullable=False
     )
     data_atualizado: datetime | None = None
 
-    atleta_id: int = Field(default=None, foreign_key='atleta.id')
+    atleta_id: Optional[int] = Field(
+        default=None, foreign_key='atleta.id', nullable=True
+    )
+
+    controle_id: Optional[int] = Field(
+        default=None, foreign_key='historicocontrole.id', nullable=True
+    )
+
+    contrato_id: Optional[int] = Field(
+        default=None, foreign_key='contrato.id', nullable=True
+    )
 
 
 class AtletaImagens(SQLModel, table=True):

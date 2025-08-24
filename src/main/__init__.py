@@ -20,6 +20,7 @@ from src.main.rest.contrato_versao_list import contrato_versao_list
 from src.main.rest.controle_create import controle_create
 from src.main.rest.controle_delete import controle_delete
 from src.main.rest.controle_list import controle
+from src.main.rest.file_docs_delete import file_docs_delete
 from src.main.rest.file_download import file_download
 from src.main.rest.file_upload import file_upload
 from src.main.rest.files_delete import file_delete
@@ -1600,11 +1601,162 @@ router.add_api_route(
     },
 )
 router.add_api_route(
+    '/file-upload/contrato/{id}',
+    endpoint=file_upload,
+    tags=['File'],
+    methods=['POST'],
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do contrato a ser anexado o documento',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
+        'requestBody': {
+            'content': {
+                'multipart/form-data': {
+                    'schema': {
+                        'type': 'object',
+                        'properties': {
+                            'file': {
+                                'type': 'string',
+                                'format': 'binary',
+                                'description': 'Upload a file.',
+                            }
+                        },
+                    }
+                }
+            }
+        },
+    },
+)
+router.add_api_route(
+    '/file-download/contrato/{id}',
+    endpoint=file_download,
+    tags=['File'],
+    methods=['GET'],
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do documento',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Successful Response',
+                'content': {
+                    'application/json': {
+                        'example': {
+                            'status': True,
+                            'blob_url': 'https://atleta_1.jpeg',
+                        }
+                    }
+                },
+            },
+            '400': {
+                'description': 'Bad Response',
+                'content': {
+                    'application/json': {
+                        'example': {'status': False, 'blob_url': 'null'},
+                    }
+                },
+            },
+        },
+    },
+)
+router.add_api_route(
+    '/file-upload/recibo/{id}',
+    endpoint=file_upload,
+    tags=['File'],
+    methods=['POST'],
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do item a ser comprovado',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
+        'requestBody': {
+            'content': {
+                'multipart/form-data': {
+                    'schema': {
+                        'type': 'object',
+                        'properties': {
+                            'file': {
+                                'type': 'string',
+                                'format': 'binary',
+                                'description': 'Upload a file.',
+                            }
+                        },
+                    }
+                }
+            }
+        },
+    },
+)
+router.add_api_route(
+    '/file-download/recibo/{id}',
+    endpoint=file_download,
+    tags=['File'],
+    methods=['GET'],
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do comprovante',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
+        'responses': {
+            '200': {
+                'description': 'Successful Response',
+                'content': {
+                    'application/json': {
+                        'example': {
+                            'status': True,
+                            'blob_url': 'https://atleta_1.jpeg',
+                        }
+                    }
+                },
+            },
+            '400': {
+                'description': 'Bad Response',
+                'content': {
+                    'application/json': {
+                        'example': {'status': False, 'blob_url': 'null'},
+                    }
+                },
+            },
+        },
+    },
+)
+router.add_api_route(
     '/file-upload/atleta/{id}',
     endpoint=file_upload,
     tags=['File'],
     methods=['POST'],
     openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único do atleta',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
         'requestBody': {
             'content': {
                 'multipart/form-data': {
@@ -1620,7 +1772,41 @@ router.add_api_route(
                     }
                 }
             }
-        }
+        },
+    },
+)
+router.add_api_route(
+    '/file-delete/recibo/{id}',
+    endpoint=file_docs_delete,
+    tags=['File'],
+    methods=['DELETE'],
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único da imagem',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
+    },
+)
+router.add_api_route(
+    '/file-delete/contrato/{id}',
+    endpoint=file_docs_delete,
+    tags=['File'],
+    methods=['DELETE'],
+    openapi_extra={
+        'parameters': [
+            {
+                'name': 'id',
+                'in': 'path',
+                'required': True,
+                'description': 'Identificador único da imagem',
+                'schema': {'type': 'integer', 'example': 1},
+            }
+        ],
     },
 )
 router.add_api_route(
