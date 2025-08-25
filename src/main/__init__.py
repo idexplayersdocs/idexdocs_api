@@ -98,8 +98,18 @@ from src.schemas.usuario import (
     UsuarioUpdateSchema,
 )
 from src.schemas.video import VideoCreateSchema, VideoUpdateSchema
+from fastapi import status
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
+
+@router.get("/health")
+async def health_check():
+    """Health check endpoint for Azure App Service monitoring."""
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"status": "healthy", "service": "idexdocs-api"}
+    )
 
 router.add_api_route(
     '/usuario/create',
