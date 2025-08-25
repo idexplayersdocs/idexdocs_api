@@ -67,5 +67,5 @@ jobs:
         id: deploy-to-webapp
         with:
           app-name: 'idexdocs-api-dev'
-          slot-name: 'Production'
+          slot-name: 'production'
           
