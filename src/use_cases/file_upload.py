@@ -33,7 +33,7 @@ class FileUploadStrategy(ABC):
     MIME_TYPE_EXT_MAP: dict[str | None, str] = {
         'image/jpeg': '.jpeg',
         'image/png': '.png',
-        'image/pdf': '.pdf',
+        'application/pdf': '.pdf',
     }
 
     def __init__(
@@ -54,7 +54,7 @@ class FileUploadStrategy(ABC):
         self, object_id: int, file_name: str, tipo: str
     ) -> None:
         account_url = self.storage_service.account_url
-        uri = account_url + '/' + file_name
+        uri = account_url + file_name
         self.atleta_repository.save_blob_url(object_id, uri, tipo)
 
     def _upload_file(
@@ -76,7 +76,7 @@ class FileUploadStrategy(ABC):
             self.storage_service.upload_image(
                 container_name, file_data, filename_with_extension
             )
-            uri: str = f'{container_name}{filename_with_extension}'
+            uri: str = f'{container_name}/{filename_with_extension}'
 
             self._save_blob_uri_in_database(object_id, uri, tipo)
         except Exception as e:
@@ -133,7 +133,7 @@ class ReceiptUploadStrategy(FileUploadStrategy):
     @override
     def upload(self, http_request: HttpRequest) -> dict:
         _id: int = http_request.path_params.get('id')
-        file: UploadFile = http_request.files.get('file')
+        file: UploadFile = http_request.files.get('arquivo')
 
         self._check_parent_exists(_id)
         self._upload_file('atleta-controles', file, _id, self.tipo)
@@ -202,7 +202,7 @@ class FileUploadUseCase:
                 parent_repository=self.atleta_repository,
                 tipo='atleta',
             )
-        elif 'recibo' in url:
+        elif 'controle' in url:
             return ReceiptUploadStrategy(
                 storage_service=self.storage_service,
                 parent_repository=self.controle_repository,
