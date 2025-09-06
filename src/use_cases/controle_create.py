@@ -2,6 +2,7 @@ from src.error.types.http_not_found import NotFoundError
 from src.presentation.http_types.http_request import HttpRequest
 from src.repository.repo_atleta import AtletaRepo
 from src.repository.repo_controle import ControleRepo
+from src.use_cases.file_upload import FileUploadUseCase
 
 
 class ControleCreateUseCase:
@@ -9,18 +10,26 @@ class ControleCreateUseCase:
         self,
         controle_repository: ControleRepo,
         atleta_repository: AtletaRepo,
+        file_upload_use_case: FileUploadUseCase,
     ):
         self.controle_repository = controle_repository
         self.atleta_repository = atleta_repository
+        self.file_upload_use_case = file_upload_use_case
 
     def execute(self, http_request: HttpRequest):
-        controle_data: dict = dict(http_request.json)
+        controle_data: dict = dict(http_request.files)
 
-        atleta_id: int = controle_data.get('atleta_id')
+        atleta_id: int = int(controle_data.get('atleta_id'))
 
         self._check_atleta_exists(atleta_id)
 
-        return self._create_controle(controle_data)
+        controle = self._create_controle(controle_data)
+
+        if http_request.files and 'arquivo' in http_request.files:
+            http_request.path_params['id'] = controle.get('id')
+            self.file_upload_use_case.execute(http_request)
+
+        return controle
 
     def _check_atleta_exists(self, atleta_id: int):
         atleta = self.atleta_repository.get_atleta_by_id(atleta_id)

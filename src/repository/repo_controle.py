@@ -1,14 +1,19 @@
+from typing import Any
+
+from sqlalchemy.orm.exc import NoResultFound
 from sqlmodel import func, select
 
 from .base_repo import create_session
-from .model_objects import HistoricoControle
+from .model_objects import AtletaAvatar, HistoricoControle
 
 
 class ControleRepo:
     def __init__(self) -> None:
         self.session_factory = create_session
 
-    def _create_controle_list_objects(self, result: list) -> dict:
+    def _create_controle_list_objects(
+        self, result: list
+    ) -> list[dict[str, Any]]:
         return [
             {
                 'controle_id': atleta_id,
@@ -16,24 +21,43 @@ class ControleRepo:
                 'quantidade': quantidade,
                 'preco': preco,
                 'data_controle': data_controle.strftime('%Y-%m-%d'),
+                'arquivo_url': blob_url,
             }
-            for atleta_id, nome, quantidade, preco, data_controle in result
+            for atleta_id, nome, quantidade, preco, data_controle, blob_url in result
         ]
 
     def list_controle(self, atleta_id: int, filters: dict = None):
         with self.session_factory() as session:
-            query = select(
-                HistoricoControle.id,
-                HistoricoControle.nome,
-                HistoricoControle.quantidade,
-                HistoricoControle.preco,
-                HistoricoControle.data_controle,
-            ).filter(HistoricoControle.atleta_id == atleta_id)
+            query = (
+                select(
+                    HistoricoControle.id,
+                    HistoricoControle.nome,
+                    HistoricoControle.quantidade,
+                    HistoricoControle.preco,
+                    HistoricoControle.data_controle,
+                    AtletaAvatar.blob_url,
+                )
+                .outerjoin(
+                    AtletaAvatar,
+                    HistoricoControle.id == AtletaAvatar.controle_id,
+                )
+                .filter(HistoricoControle.atleta_id == atleta_id)
+            )
 
             # conta o número total de items sem paginação
             total_count = session.exec(
                 select(func.count()).select_from(query.subquery())
             ).one()
+
+            # faz a some de todos os preços
+            total_sum = (
+                session.exec(
+                    select(func.sum(HistoricoControle.preco)).where(
+                        HistoricoControle.atleta_id == atleta_id
+                    )
+                ).one()
+                or 0
+            )
 
             # aplica paginação
             page = int(filters.get('page', 1))
@@ -47,8 +71,10 @@ class ControleRepo:
             # executa query com paginação
             paginated_results = session.exec(query).all()
 
-            return total_count, self._create_controle_list_objects(
-                paginated_results
+            return (
+                total_count,
+                total_sum,
+                self._create_controle_list_objects(paginated_results),
             )
 
     def create_controle(self, controle_data: dict) -> dict:
@@ -59,10 +85,24 @@ class ControleRepo:
             session.refresh(new_controle)
             return {'id': new_controle.id}
 
+    def get_by_id(self, controle_id: int) -> HistoricoControle | None:
+        with self.session_factory() as session:
+            query = select(HistoricoControle).where(
+                HistoricoControle.id == controle_id
+            )
+
+            try:
+                result = session.exec(query).one()
+                return result
+            except NoResultFound:
+                return None
+
     def delete_controle(self, controle_id: int):
         with self.session_factory() as session:
             controle: HistoricoControle = session.exec(
-                select(HistoricoControle).where(HistoricoControle.id == controle_id)
+                select(HistoricoControle).where(
+                    HistoricoControle.id == controle_id
+                )
             ).one()
 
             session.delete(controle)
