@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   api:
     build:
       context: ${PWD}
       dockerfile: docker/web/Dockerfile.local
-    # command: gunicorn -b :8000 --reload -k uvicorn.workers.UvicornWorker --timeout 500 asgi:app
+    command: /app/.venv/bin/gunicorn -b :80 --reload -k uvicorn.workers.UvicornWorker --timeout 500 --access-logfile - --access-logformat "%(h)s %(t)s \"%(r)s\" %(s)s %(b)s" asgi:app
     volumes:
-      - ./src:/opt/code
+      - ..:/opt/code
       - ./requirements:/opt/requirements
     ports:
       - "8000:80"
@@ -15,6 +13,25 @@ services:
       - sqlserver
     environment:
       TOKEN_KEY: ${TOKEN_KEY}
+      MSSQL_USER: ${MSSQL_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_HOSTNAME: sqlserver
+      APPLICATION_DB: ${APPLICATION_DB}
+  
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../idexdocs_frontend:/app
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - api
+  
   sqlserver:
     image: mcr.microsoft.com/mssql/server
     user: root
