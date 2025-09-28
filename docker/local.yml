@@ -1,9 +1,10 @@
 services:
   api:
+    container_name: idexdocs_api
     build:
       context: ${PWD}
       dockerfile: docker/web/Dockerfile.local
-    command: /app/.venv/bin/gunicorn -b :80 --reload -k uvicorn.workers.UvicornWorker --timeout 500 --access-logfile - --access-logformat "%(h)s %(t)s \"%(r)s\" %(s)s %(b)s" asgi:app
+    command: /app/.venv/bin/uvicorn asgi:app --host 0.0.0.0 --port 80 --reload --reload-dir /opt/code --access-log
     volumes:
       - ..:/opt/code
       - ./requirements:/opt/requirements
@@ -18,8 +19,10 @@ services:
       MSSQL_PORT: ${MSSQL_PORT}
       MSSQL_HOSTNAME: sqlserver
       APPLICATION_DB: ${APPLICATION_DB}
+      STORAGE_ACCOUNT: ${STORAGE_ACCOUNT}
   
   frontend:
+    container_name: idexdocs_frontend
     image: node:18-alpine
     working_dir: /app
     command: sh -c "npm install && npm run dev"
