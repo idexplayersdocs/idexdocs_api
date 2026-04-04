@@ -1,3 +1,4 @@
+from src.main.adapters.azure_blob_storage import AzureBlobStorage
 from src.presentation.controllers.contrato_create_controler import (
     ContratoCreateController,
 )
@@ -7,8 +8,9 @@ from src.use_cases.contrato_create import ContratoCreateUseCase
 
 def contrato_create_composer():
     contrato_repository = ContratoRepo()
+    storage_service = AzureBlobStorage()
 
-    use_case = ContratoCreateUseCase(contrato_repository)
+    use_case = ContratoCreateUseCase(contrato_repository, storage_service)
     controller = ContratoCreateController(use_case=use_case)
 
     return controller.handle

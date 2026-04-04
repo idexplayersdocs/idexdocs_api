@@ -263,6 +263,7 @@ class Contrato(SQLModel, table=True):
         default_factory=datetime_now_sec, nullable=False
     )
     data_atualizado: datetime | None = None
+    arquivo_url: str | None = None
 
     atleta_id: int = Field(default=None, foreign_key='atleta.id')
     contrato_sub_tipo_id: int = Field(

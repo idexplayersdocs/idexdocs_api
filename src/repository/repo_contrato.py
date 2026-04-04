@@ -28,8 +28,9 @@ class ContratoRepo:
                 'data_inicio': data_inicio.strftime('%Y-%m-%d'),
                 'data_termino': data_termino.strftime('%Y-%m-%d'),
                 'ativo': ativo,
+                'arquivo_url': arquivo_url,
             }
-            for id_, tipo, nome, versao, observacao, data_inicio, data_termino, ativo in result
+            for id_, tipo, nome, versao, observacao, data_inicio, data_termino, ativo, arquivo_url in result
         ]
 
         return contrato_list
@@ -59,6 +60,7 @@ class ContratoRepo:
                     Contrato.data_inicio,
                     Contrato.data_termino,
                     Contrato.ativo,
+                    Contrato.arquivo_url,
                 )
                 .select_from(Contrato)
                 .join(
@@ -199,6 +201,7 @@ class ContratoRepo:
                     data_atualizado=datetime_now_sec(),
                     observacao=contrato_data.get('observacao'),
                     ativo=contrato_data.get('ativo'),
+                    arquivo_url=contrato_data.get('arquivo_url'),
                 )
             )
 
@@ -211,6 +214,15 @@ class ContratoRepo:
             )
 
             session.add(new_contrato_versao)
+            session.commit()
+
+    def update_contrato_arquivo_url(self, contrato_id: int, arquivo_url: str):
+        with self.session_factory() as session:
+            session.exec(
+                update(Contrato)
+                .where(Contrato.id == contrato_id)
+                .values(arquivo_url=arquivo_url)
+            )
             session.commit()
 
     def get_contrato_by_tipo_e_atleta(self, atleta_id: int, contrato_id: int):

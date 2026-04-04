@@ -2453,6 +2453,19 @@ router.add_api_route(
     openapi_extra={
         'requestBody': {
             'content': {
+                'multipart/form-data': {
+                    'schema': {
+                        'type': 'object',
+                        'properties': {
+                            'atleta_id': {'type': 'integer'},
+                            'contrato_sub_tipo_id': {'type': 'integer'},
+                            'data_inicio': {'type': 'string', 'format': 'date'},
+                            'data_termino': {'type': 'string', 'format': 'date'},
+                            'observacao': {'type': 'string'},
+                            'arquivo': {'type': 'string', 'format': 'binary', 'description': 'Arquivo do contrato (PDF, JPG, PNG). Max 10MB.'},
+                        },
+                    }
+                },
                 'application/json': {
                     'schema': ContratoCreateSchema.model_json_schema(),
                     'examples': {
@@ -2482,6 +2495,19 @@ router.add_api_route(
     openapi_extra={
         'requestBody': {
             'content': {
+                'multipart/form-data': {
+                    'schema': {
+                        'type': 'object',
+                        'properties': {
+                            'contrato_id': {'type': 'integer'},
+                            'data_inicio': {'type': 'string', 'format': 'date'},
+                            'data_termino': {'type': 'string', 'format': 'date'},
+                            'observacao': {'type': 'string'},
+                            'ativo': {'type': 'boolean'},
+                            'arquivo': {'type': 'string', 'format': 'binary', 'description': 'Arquivo do contrato (PDF, JPG, PNG). Max 10MB.'},
+                        },
+                    }
+                },
                 'application/json': {
                     'schema': ContratoUpdateSchema.model_json_schema(),
                     'examples': {
