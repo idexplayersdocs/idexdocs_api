@@ -23,6 +23,7 @@ class ControleCreateUseCase:
 
         self._check_atleta_exists(atleta_id)
 
+        controle_data.pop('arquivo', None)
         controle = self._create_controle(controle_data)
 
         if http_request.files and 'arquivo' in http_request.files:

@@ -21,6 +21,8 @@ class DeleteFileDocsUseCase:
             resource_path = 'controles'
         elif original_resource_path == 'contrato':
             resource_path = 'contratos'
+        else:
+            raise NotFoundError(f'Tipo de recurso não suportado: {original_resource_path}')
 
         file = self._get_file_uri(file_id)
         blob_name = file.blob_url.split('/')[-1]
