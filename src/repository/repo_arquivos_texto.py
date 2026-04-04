@@ -33,11 +33,11 @@ class ArquivoTextRepo:
         with self.session_factory() as session:
             query = select(self.class_model).where(self.class_model.id == file_id)
 
-        try:
-            result = session.exec(query).one()
-            return result
-        except NoResultFound:
-            return None
+            try:
+                result = session.exec(query).one()
+                return result
+            except NoResultFound:
+                return None
     #TODO: Implementar o método get_file_by_id para retornar o arquivo com base no ID fornecido.
     def get_file_uris(self, atleta_id: int, filters: dict = {}):
         with self.session_factory() as session:
