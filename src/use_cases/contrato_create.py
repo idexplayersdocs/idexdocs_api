@@ -48,7 +48,7 @@ class ContratoCreateUseCase:
 
         # Upload file if provided
         if file and self.storage_service:
-            arquivo_url = self._upload_file('contrato-arquivos', file, result['id'])
+            arquivo_url = self._upload_file('atleta-contratos', file, result['id'])
             # Update the contrato record with the arquivo_url
             self.contrato_repository.update_contrato_arquivo_url(result['id'], arquivo_url)
 

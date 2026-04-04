@@ -43,7 +43,7 @@ class ContratoUpdateUseCase:
         # Upload file if provided
         contrato_id = contrato_data.get('contrato_id')
         if file and self.storage_service and contrato_id:
-            arquivo_url = self._upload_file('contrato-arquivos', file, contrato_id)
+            arquivo_url = self._upload_file('atleta-contratos', file, contrato_id)
             self.contrato_repository.update_contrato_arquivo_url(contrato_id, arquivo_url)
 
         return result
