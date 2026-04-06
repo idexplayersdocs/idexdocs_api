@@ -19,8 +19,10 @@ class ControleListUseCase:
 
         self._check_atleta_exists(atleta_id)
 
-        total_count, result = self._list_controle(atleta_id, filters)
-        return self._format_response(total_count, result)
+        total_count, total_sum, result = self._list_controle(
+            atleta_id, filters
+        )
+        return self._format_response(total_count, total_sum, result)
 
     def _check_atleta_exists(self, atleta_id: int):
         atleta = self.atleta_repository.get_atleta_by_id(atleta_id)
@@ -35,9 +37,9 @@ class ControleListUseCase:
 
         return controles
 
-    def _format_response(self, total_count: int, result: list[dict]) -> dict:
-
-        total_sum = sum(item['preco'] for item in result)
+    def _format_response(
+        self, total_count: int, total_sum: float, result: list[dict]
+    ) -> dict:
 
         return {
             'count': len(result),

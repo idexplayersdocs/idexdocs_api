@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
+from fastapi import UploadFile
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -10,6 +11,7 @@ class ControleCreateSchema(BaseModel):
     quantidade: int = Field(..., ge=1)
     preco: Decimal = Field(gt=0, decimal_places=2)
     data_controle: str
+    arquivo: UploadFile
 
     @field_validator('data_controle')
     def validate_date(cls, v):

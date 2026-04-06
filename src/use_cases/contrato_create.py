@@ -12,11 +12,23 @@ class ContratoCreateUseCase:
         self.contrato_repository = contrato_repository
 
     def execute(self, http_request: HttpRequest):
-        contrato_data: dict = dict(http_request.json)
-        atleta_id: int = contrato_data.get('atleta_id')
-        contrato_id: int = contrato_data.get('contrato_sub_tipo_id')
+        # Detect JSON vs FormData #TODO: Refactor this to a separate function and add tests
+        if http_request.json:
+            contrato_data = dict(http_request.json)
+        else:
+            form = http_request.files
+            contrato_data = {
+                'atleta_id': int(form.get('atleta_id')),
+                'contrato_sub_tipo_id': int(form.get('contrato_sub_tipo_id')),
+                'data_inicio': form.get('data_inicio'),
+                'data_termino': form.get('data_termino'),
+                'observacao': form.get('observacao') or None,
+            }
 
-        self._check_contrato_already_exists(atleta_id, contrato_id)
+        atleta_id: int = contrato_data.get('atleta_id')
+        contrato_sub_tipo_id: int = contrato_data.get('contrato_sub_tipo_id')
+
+        self._check_contrato_already_exists(atleta_id, contrato_sub_tipo_id)
 
         return self._create_contrato(contrato_data)
 
@@ -26,8 +38,5 @@ class ContratoCreateUseCase:
             raise ContratoExistente(f'Contrato {contrato.nome} já existe para o atleta')
 
     def _create_contrato(self, contrato_data: dict):
-        contrato = self.contrato_repository.create_contrato(
-            contrato_data
-        )
-
+        contrato = self.contrato_repository.create_contrato(contrato_data)
         return contrato

@@ -1,13 +1,12 @@
-version: '3.8'
-
 services:
   api:
+    container_name: idexdocs_api
     build:
       context: ${PWD}
       dockerfile: docker/web/Dockerfile.local
-    # command: gunicorn -b :8000 --reload -k uvicorn.workers.UvicornWorker --timeout 500 asgi:app
+    command: /app/.venv/bin/uvicorn asgi:app --host 0.0.0.0 --port 80 --reload --reload-dir /opt/code --access-log
     volumes:
-      - ./src:/opt/code
+      - ..:/opt/code
       - ./requirements:/opt/requirements
     ports:
       - "8000:80"
@@ -15,6 +14,31 @@ services:
       - sqlserver
     environment:
       TOKEN_KEY: ${TOKEN_KEY}
+      MSSQL_USER: ${MSSQL_USER}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_PORT: ${MSSQL_PORT}
+      MSSQL_HOSTNAME: ${MSSQL_HOSTNAME}
+      APPLICATION_DB: ${APPLICATION_DB}
+      STORAGE_ACCOUNT: ${STORAGE_ACCOUNT}
+      APPLICATION_CONFIG: ${APPLICATION_CONFIG}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID}
+      AZURE_TENANT_ID: ${AZURE_TENANT_ID}
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET}
+
+  frontend:
+    container_name: idexdocs_frontend
+    image: node:18-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../idexdocs_frontend:/app
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - api
+  
   sqlserver:
     image: mcr.microsoft.com/mssql/server
     user: root

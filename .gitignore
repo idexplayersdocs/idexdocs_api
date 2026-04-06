@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,macos,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudiocode,macos,venv
 
+### Agents ###
+.claude
+
 ### My files ###
 memo.txt
 config/

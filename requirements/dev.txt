@@ -5,4 +5,4 @@ blue
 ruff
 httpx
 isort
-mypy
+ty
