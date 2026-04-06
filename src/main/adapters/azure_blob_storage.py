@@ -19,9 +19,8 @@ class AzureBlobStorage:
 
         # Initialize the BlobServiceClient once
         if AzureBlobStorage._blob_service_client is None:
-            default_credential = DefaultAzureCredential(
-                exclude_environment_credential=True
-            )
+            default_credential = DefaultAzureCredential()
+
             AzureBlobStorage._blob_service_client = BlobServiceClient(
                 AzureBlobStorage.account_url, credential=default_credential
             )

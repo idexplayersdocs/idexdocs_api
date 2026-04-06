@@ -1,1 +1,3 @@
-from .relacionamento import RelacionamentoCreateSchema
+from .relacionamento import (
+    RelacionamentoCreateSchema as RelacionamentoCreateSchema,
+)

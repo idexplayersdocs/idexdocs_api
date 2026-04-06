@@ -43,5 +43,5 @@ class DeleteFileDocsUseCase:
         try:
             self.storage_service.delete_imagem(container, uri)
             return True
-        except Exception as exc:
+        except Exception:
             return False

@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from fastapi.responses import JSONResponse
 
 from src.main.rest.atleta_create import atleta_create
 from src.main.rest.atleta_detail import atleta_detail
@@ -16,7 +17,9 @@ from src.main.rest.contrato_create import contrato_create
 from src.main.rest.contrato_list import contrato_list
 from src.main.rest.contrato_tipo_list import contrato_tipo_list
 from src.main.rest.contrato_update import contrato_update
+from src.main.rest.contrato_versao_create import contrato_versao_create
 from src.main.rest.contrato_versao_list import contrato_versao_list
+from src.main.rest.contrato_versao_update import contrato_versao_update
 from src.main.rest.controle_create import controle_create
 from src.main.rest.controle_delete import controle_delete
 from src.main.rest.controle_list import controle
@@ -99,8 +102,6 @@ from src.schemas.usuario import (
     UsuarioUpdateSchema,
 )
 from src.schemas.video import VideoCreateSchema, VideoUpdateSchema
-from fastapi import status
-from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -2523,6 +2524,56 @@ router.add_api_route(
                         }
                     },
                 }
+            },
+            'required': True,
+        },
+    },
+)
+router.add_api_route(
+    '/create/contrato/versao',
+    endpoint=contrato_versao_create,
+    tags=['Contrato'],
+    methods=['POST'],
+    openapi_extra={
+        'requestBody': {
+            'content': {
+                'multipart/form-data': {
+                    'schema': {
+                        'type': 'object',
+                        'properties': {
+                            'contrato_id': {'type': 'integer'},
+                            'data_inicio': {'type': 'string', 'format': 'date'},
+                            'data_termino': {'type': 'string', 'format': 'date'},
+                            'observacao': {'type': 'string'},
+                            'arquivo': {'type': 'string', 'format': 'binary', 'description': 'Arquivo da versão (PDF, JPG, PNG). Max 10MB.'},
+                        },
+                    }
+                },
+            },
+            'required': True,
+        },
+    },
+)
+router.add_api_route(
+    '/update/contrato/versao',
+    endpoint=contrato_versao_update,
+    tags=['Contrato'],
+    methods=['PUT'],
+    openapi_extra={
+        'requestBody': {
+            'content': {
+                'multipart/form-data': {
+                    'schema': {
+                        'type': 'object',
+                        'properties': {
+                            'versao_id': {'type': 'integer'},
+                            'data_inicio': {'type': 'string', 'format': 'date'},
+                            'data_termino': {'type': 'string', 'format': 'date'},
+                            'observacao': {'type': 'string'},
+                            'arquivo': {'type': 'string', 'format': 'binary', 'description': 'Arquivo da versão (PDF, JPG, PNG). Max 10MB.'},
+                        },
+                    }
+                },
             },
             'required': True,
         },

@@ -39,6 +39,36 @@ class ContratoUpdateSchema(BaseModel):
             raise ValueError('Formato de data inválido, utilize YYYY-MM-DD')
 
 
+class ContratoVersaoCreateSchema(BaseModel):
+    contrato_id: int
+    data_inicio: str
+    data_termino: str
+    observacao: str | None = None
+
+    @field_validator('data_inicio', 'data_termino')
+    def validate_date(cls, v):
+        try:
+            datetime.strptime(v, '%Y-%m-%d')
+            return v
+        except ValueError:
+            raise ValueError('Formato de data inválido, utilize YYYY-MM-DD')
+
+
+class ContratoVersaoUpdateSchema(BaseModel):
+    versao_id: int
+    data_inicio: str
+    data_termino: str
+    observacao: str | None = None
+
+    @field_validator('data_inicio', 'data_termino')
+    def validate_date(cls, v):
+        try:
+            datetime.strptime(v, '%Y-%m-%d')
+            return v
+        except ValueError:
+            raise ValueError('Formato de data inválido, utilize YYYY-MM-DD')
+
+
 class ContratoSubTipo(BaseModel):
     id: int
     nome: str

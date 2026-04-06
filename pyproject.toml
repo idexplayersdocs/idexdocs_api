@@ -22,7 +22,7 @@ extend-exclude = ['(migrations/)', '(src/use_cases/pdf_create.py)']
 [tool.taskipy.tasks]
 lint = 'ruff check . && blue --check . --diff'
 format = 'blue . && isort .'
-type = 'mypy . --explicit-package-bases'
+type = 'ty check src'
 run = 'uvicorn asgi:app --reload'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=src -vv'

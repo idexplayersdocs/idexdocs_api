@@ -1,4 +1,6 @@
 import logging
+import os
+import traceback
 
 from pydantic import ValidationError
 
@@ -62,7 +64,11 @@ def handle_errors(error: Exception) -> HttpResponse:
             },
         )
 
-    logger.warning('Handling unknown error, returning ServerError')
+    if os.getenv('APPLICATION_CONFIG') == 'local':
+        logger.error('Full traceback:\n%s', traceback.format_exc())
+    else:
+        logger.error('Handling unknown error, returning ServerError')
+    
     return HttpResponse(
         status_code=500,
         body={'errors': [{'title': 'ServerError', 'message': str(error)}]},

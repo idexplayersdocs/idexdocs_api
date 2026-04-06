@@ -28,9 +28,8 @@ class ContratoRepo:
                 'data_inicio': data_inicio.strftime('%Y-%m-%d'),
                 'data_termino': data_termino.strftime('%Y-%m-%d'),
                 'ativo': ativo,
-                'arquivo_url': arquivo_url,
             }
-            for id_, tipo, nome, versao, observacao, data_inicio, data_termino, ativo, arquivo_url in result
+            for id_, tipo, nome, versao, observacao, data_inicio, data_termino, ativo in result
         ]
 
         return contrato_list
@@ -38,12 +37,14 @@ class ContratoRepo:
     def _create_contrato_versao_objects(self, result: list) -> list[dict]:
         contrato_list = [
             {
+                'versao_id': versao_id,
                 'versao': versao,
                 'data_inicio': data_inicio.strftime('%Y-%m-%d'),
                 'data_termino': data_termino.strftime('%Y-%m-%d'),
                 'observacao': observacao,
+                'arquivo_url': arquivo_url,
             }
-            for versao, data_inicio, data_termino, observacao in result
+            for versao_id, versao, data_inicio, data_termino, observacao, arquivo_url in result
         ]
 
         return contrato_list
@@ -60,7 +61,6 @@ class ContratoRepo:
                     Contrato.data_inicio,
                     Contrato.data_termino,
                     Contrato.ativo,
-                    Contrato.arquivo_url,
                 )
                 .select_from(Contrato)
                 .join(
@@ -96,10 +96,12 @@ class ContratoRepo:
     def list_contrato_versao(self, contrato_id: int, filters: dict):
         with self.session_factory() as session:
             query = select(
+                ContratoVersao.id,
                 ContratoVersao.versao,
                 ContratoVersao.data_inicio,
                 ContratoVersao.data_termino,
                 ContratoVersao.observacao,
+                ContratoVersao.arquivo_url,
             ).where(ContratoVersao.contrato_id == contrato_id)
 
             # conta o número total de items sem paginação
@@ -201,7 +203,6 @@ class ContratoRepo:
                     data_atualizado=datetime_now_sec(),
                     observacao=contrato_data.get('observacao'),
                     ativo=contrato_data.get('ativo'),
-                    arquivo_url=contrato_data.get('arquivo_url'),
                 )
             )
 
@@ -215,13 +216,76 @@ class ContratoRepo:
 
             session.add(new_contrato_versao)
             session.commit()
-
-    def update_contrato_arquivo_url(self, contrato_id: int, arquivo_url: str):
+    #TODO: refactor update_contrato and create_contrato_versao to share code, since they have a lot of duplicated logic
+    def update_contrato_versao_arquivo_url(self, versao_id: int, arquivo_url: str):
         with self.session_factory() as session:
             session.exec(
-                update(Contrato)
-                .where(Contrato.id == contrato_id)
+                update(ContratoVersao)
+                .where(ContratoVersao.id == versao_id)
                 .values(arquivo_url=arquivo_url)
+            )
+            session.commit()
+
+    def create_contrato_versao(
+        self,
+        contrato_id: int,
+        data_inicio,
+        data_termino,
+        observacao: str | None,
+    ) -> dict:
+        with self.session_factory() as session:
+            try:
+                max_versao = session.exec(
+                    select(func.max(ContratoVersao.versao)).where(
+                        ContratoVersao.contrato_id == contrato_id
+                    )
+                ).one()
+
+                nova_versao = (max_versao or 0) + 1
+
+                new_contrato_versao = ContratoVersao(
+                    contrato_id=contrato_id,
+                    versao=nova_versao,
+                    data_inicio=data_inicio,
+                    data_termino=data_termino,
+                    observacao=observacao,
+                )
+
+                session.add(new_contrato_versao)
+                session.flush()
+
+                session.exec(
+                    update(Contrato)
+                    .where(Contrato.id == contrato_id)
+                    .values(versao=nova_versao)
+                )
+
+                session.commit()
+                session.refresh(new_contrato_versao)
+
+                return {'id': new_contrato_versao.id}
+
+            except Exception:
+                session.rollback()
+                raise
+
+    def update_contrato_versao(
+        self,
+        versao_id: int,
+        data_inicio,
+        data_termino,
+        observacao: str | None,
+    ):
+        with self.session_factory() as session:
+            session.exec(
+                update(ContratoVersao)
+                .where(ContratoVersao.id == versao_id)
+                .values(
+                    data_inicio=data_inicio,
+                    data_termino=data_termino,
+                    observacao=observacao,
+                    data_atualizado=datetime_now_sec(),
+                )
             )
             session.commit()
 
