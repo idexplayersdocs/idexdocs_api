@@ -55,7 +55,7 @@ class PdfCreateUseCase:
         # Recuperando toads informações inerentes ao atleta
         _, clubes = self.clube_repository.list_clube(atleta_id, filters)
         _, lesoes = self.lesao_repository.list_lesao(atleta_id, filters)
-        _, controles = self.controle_repository.list_controle(atleta_id, filters)
+        _, _, controles = self.controle_repository.list_controle(atleta_id, filters)
         _, competicoes = self.competicao_repository.list_competicao(atleta_id, filters)
         caracteristicas_fisicas, _ = self.caracteristica_repository.list_caracteristica(atleta_id, filters)
         observacoes_desempenho = self.observacao_repository.list_observacao(atleta_id, filters={'tipo': 'desempenho'})
