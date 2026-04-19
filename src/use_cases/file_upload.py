@@ -54,7 +54,7 @@ class FileUploadStrategy(ABC):
         self, object_id: int, file_name: str, tipo: str
     ) -> None:
         account_url = self.storage_service.account_url
-        uri = account_url + file_name
+        uri = account_url + "/" + file_name
         self.atleta_repository.save_blob_url(object_id, uri, tipo)
 
     def _upload_file(
