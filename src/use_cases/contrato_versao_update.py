@@ -63,7 +63,7 @@ class ContratoVersaoUpdateUseCase:
         try:
             file_data: bytes = arquivo.file.read()
             self.storage_service.upload_image(CONTAINER_NAME, file_data, filename)
-            url: str = f'{self.storage_service.account_url}{CONTAINER_NAME}/{filename}'
+            url: str = f'{self.storage_service.account_url}/{CONTAINER_NAME}/{filename}'
             self.contrato_repository.update_contrato_versao_arquivo_url(versao_id, url)
         except Exception as e:
             raise RuntimeError(f'Erro ao salvar o arquivo: {e}')
