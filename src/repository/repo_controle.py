@@ -97,13 +97,29 @@ class ControleRepo:
             except NoResultFound:
                 return None
 
+    def get_avatars_by_controle_id(self, controle_id: int) -> list[AtletaAvatar]:
+        with self.session_factory() as session:
+            query = select(AtletaAvatar).where(
+                AtletaAvatar.controle_id == controle_id
+            )
+            return list(session.exec(query).all())
+
     def delete_controle(self, controle_id: int):
         with self.session_factory() as session:
             controle: HistoricoControle = session.exec(
                 select(HistoricoControle).where(
                     HistoricoControle.id == controle_id
                 )
-            ).one()
+            ).one()  # raises NoResultFound if not found — preserved behavior
+
+            # Delete dependent AtletaAvatar rows first to satisfy FK constraint
+            avatars = session.exec(
+                select(AtletaAvatar).where(
+                    AtletaAvatar.controle_id == controle_id
+                )
+            ).all()
+            for avatar in avatars:
+                session.delete(avatar)
 
             session.delete(controle)
             session.commit()
